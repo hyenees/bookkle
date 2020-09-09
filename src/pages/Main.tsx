@@ -25,7 +25,7 @@ const Main: React.FunctionComponent = () => {
     axios
       .get("http://localhost:3000/data/reviews.json")
       .then((res) => setData(res.data.reviews));
-  });
+  }, []);
 
   return (
     <>
@@ -43,13 +43,15 @@ const Main: React.FunctionComponent = () => {
                 <img src={review.image} alt="" />
                 <div className="book-title">
                   <Title book>{review.book_title}</Title>
-                  <Name>{review.author}</Name>
+                  <Name book>{review.author}</Name>
                 </div>
               </BookInfo>
               <ReviewContent>
                 <Title>{review.title}</Title>
                 <Name>{review.nickname}</Name>
-                <div>{review.contents.slice(0, 150)}...</div>
+                <div className="contents">
+                  {review.contents.slice(0, 150)}...
+                </div>
               </ReviewContent>
               <Grade>
                 <CgSmile
@@ -66,8 +68,8 @@ const Main: React.FunctionComponent = () => {
                 />
               </Grade>
               <div className="buttons">
-                <Button></Button>
-                <Button></Button>
+                <CircleButton></CircleButton>
+                <CircleButton></CircleButton>
               </div>
             </ReviewBox>
           ))}
@@ -95,8 +97,10 @@ const BookSentence = styled.div`
 
   div {
     padding: 0 20px;
-    font-family: "SunBatang-Light";
-    font-size: 40px;
+    /* font-family: "NanumMyeongjoBold"; */
+    /* font-family: "NanumMyeongjo"; */
+    font-family: "RIDIBatang";
+    font-size: 36px;
   }
 `;
 
@@ -127,11 +131,11 @@ const ReviewBox = styled.div<ReviewBoxStyle>`
 `;
 
 const Title = styled.h1<ReviewBoxStyle>`
-  font-size: ${(props) => (props.book ? "20px" : "24px")};
-  font-family: ${(props) => (props.book ? "" : "SunBatang-Light")};
+  font-size: ${(props) => (props.book ? "18px" : "22px")};
+  font-family: ${(props) => (props.book ? "" : "NanumMyeongjo")};
 `;
 
-const Button = styled.button`
+const CircleButton = styled.button`
   width: 40px;
   height: 40px;
   margin: 5px;
@@ -146,7 +150,14 @@ const Grade = styled.div`
 
 const ReviewContent = styled.div`
   width: 100%;
-  height: 260px;
+  height: 278px;
+  letter-spacing: 0.3px;
+  text-align: center;
+
+  .contents {
+    margin-top: 18px;
+    font-family: "IBMPlexSansKR-Light";
+  }
 `;
 
 const BookInfo = styled.div`
@@ -166,7 +177,8 @@ const BookInfo = styled.div`
   }
 `;
 
-const Name = styled.div`
-  margin-top: 5px;
+const Name = styled.div<ReviewBoxStyle>`
+  margin-top: 4px;
   color: #727272;
+  font-size: ${(props) => props.book && "14px"};
 `;
