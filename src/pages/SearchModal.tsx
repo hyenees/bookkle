@@ -3,7 +3,6 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { BsSearch } from "react-icons/bs";
 import { AiOutlineCloseCircle } from "react-icons/ai";
-import axios from "axios";
 
 interface SearchModalProps extends RouteComponentProps<any, any, any> {
   closeSearch: () => void;
@@ -11,15 +10,6 @@ interface SearchModalProps extends RouteComponentProps<any, any, any> {
 
 const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
   const [searchBook, setSearchBook] = useState<string>("");
-  const getBooks = () => {
-    axios
-      .get("https://dapi.kakao.com/v3/search/book?target=title", {
-        params: { query: searchBook },
-        headers: { Authorization: "KakaoAK e23535b3c49c44d77ffac09377ac9d58" },
-      })
-      .then((res) => console.log(res));
-    // props.history.push("/booklist")
-  };
 
   const { closeSearch } = props;
   return (
@@ -36,7 +26,13 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
             placeholder="책을 검색해주세요."
             onChange={(e) => setSearchBook(e.target.value)}
           />
-          <BsSearch className="search-icon" size="20" onClick={getBooks} />
+          <BsSearch
+            className="search-icon"
+            size="20"
+            onClick={() =>
+              props.history.push("/booklist", { searchBook: searchBook })
+            }
+          />
         </ModalBox>
       </ModalLayout>
     </>
