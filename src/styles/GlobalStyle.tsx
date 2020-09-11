@@ -78,7 +78,8 @@ li {
 
 input:focus,
 button:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: none;
 }
 

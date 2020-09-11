@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { GoMail } from "react-icons/go";
 import { RiLock2Line } from "react-icons/ri";
+import Input from "widget/Input";
 
 interface AccountModalProps {
   closeAccount: () => void;
@@ -106,15 +107,6 @@ const AccountBox = styled.div`
     font-size: 12px;
     color: #d3492a;
   }
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 50px;
-  padding: 11px;
-  margin-top: 10px;
-  border: 1px solid #f4f4f4;
-  color: #727272;
 `;
 
 const InputBox = styled.div`
