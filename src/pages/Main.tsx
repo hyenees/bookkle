@@ -2,137 +2,128 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Nav from "components/Nav";
+import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
+import Layout from "widget/Layout";
+import ListBoard from "widget/ListBoard";
+import Name from "widget/Name";
+import ItemBox from "widget/ItemBox";
+import Title from "widget/Title";
+import TopTitle from "widget/TopTitle";
+import Grade from "widget/Grade";
+
+interface BookDetail {
+  title: string;
+  author: string;
+  image: string;
+}
+
+interface NickName {
+  nickname: string;
+}
 
 interface ReviewInfo {
+  book_detail: BookDetail;
+  user_info: NickName;
+  title: string;
+  rating: number;
+  content: string;
+  id: number;
+}
+
+interface QuoteInfo {
   book_title: string;
   author: string;
-  nickname: string;
-  title: string;
-  grade: number;
-  contents: string;
-  image: string;
+  quote: string;
 }
 
 const Main: React.FunctionComponent = () => {
   const [data, setData] = useState<Array<ReviewInfo>>([]);
+  const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
 
   useEffect(() => {
+    axios.get(`${API_URL}/reviews/quote`).then((res) => {
+      console.log(res);
+      setRandomQuote(res.data);
+    });
     axios
-      .get("http://localhost:3000/data/reviews.json")
-      .then((res) => setData(res.data.reviews));
+      // .get("http://localhost:3000/data/reviews.json")
+      .get(`${API_URL}/reviews`)
+      .then((res) => {
+        console.log(res);
+        setData(res.data.results);
+      });
   }, []);
 
   return (
     <>
       <Nav />
-      <MainLayout>
+      <Layout>
+        <TopTitle main>
+          생각을 기록하고 책으로 소통하는 공간, <span>북끌BooKkle</span>
+        </TopTitle>
         <BookSentence>
           <ImQuotesLeft size="30" />
-          <div>생각을 기록하고 책으로 소통하는 공간, 북끌BooKkle</div>
+          <TopTitle>{randomQuote && randomQuote.quote}</TopTitle>
           <ImQuotesRight size="30" />
         </BookSentence>
-        <ReviewBoard>
+        <div>
+          {randomQuote && randomQuote.author}
+          {randomQuote && randomQuote.book_title}
+        </div>
+        <ListBoard>
           {data.map((review: ReviewInfo, idx: number) => (
-            <ReviewBox key={idx} rightReview={(idx + 1) % 4 === 0}>
+            <ItemBox mode="review" key={idx} right={(idx + 1) % 4 === 0}>
               <BookInfo>
-                <img src={review.image} alt="" />
+                <img src={review.book_detail.image} alt="" />
                 <div className="book-title">
-                  <Title book>{review.book_title}</Title>
-                  <Name book>{review.author}</Name>
+                  <Title>{review.book_detail.title}</Title>
+                  <Name book>{review.book_detail.author}</Name>
                 </div>
               </BookInfo>
               <ReviewContent>
-                <Title>{review.title}</Title>
-                <Name>{review.nickname}</Name>
+                <Title review>{review.title}</Title>
+                <Name>{review.user_info.nickname}</Name>
                 <div className="contents">
-                  {review.contents.slice(0, 150)}...
+                  {review.content.slice(0, 150)}...
                 </div>
               </ReviewContent>
               <Grade>
                 <CgSmile
                   size="30"
-                  className={review.grade === 1 ? "select" : ""}
+                  className={review.rating === 1 ? "select" : ""}
                 />
                 <CgSmileNone
                   size="30"
-                  className={review.grade === 2 ? "select" : ""}
+                  className={review.rating === 2 ? "select" : ""}
                 />
                 <CgSmileSad
                   size="30"
-                  className={review.grade === 3 ? "select" : ""}
+                  className={review.rating === 3 ? "select" : ""}
                 />
               </Grade>
               <div className="buttons">
                 <CircleButton></CircleButton>
                 <CircleButton></CircleButton>
               </div>
-            </ReviewBox>
+            </ItemBox>
           ))}
-        </ReviewBoard>
-      </MainLayout>
+        </ListBoard>
+      </Layout>
     </>
   );
 };
 
 export default Main;
 
-interface ReviewBoxStyle {
-  rightReview?: boolean;
-  book?: boolean;
-}
-
-const MainLayout = styled.main`
-  padding-top: 120px;
-`;
-
 const BookSentence = styled.div`
   display: flex;
   justify-content: center;
   padding: 50px 0;
-
-  div {
-    padding: 0 20px;
-    /* font-family: "NanumMyeongjoBold"; */
-    /* font-family: "NanumMyeongjo"; */
-    font-family: "RIDIBatang";
-    font-size: 36px;
-  }
-`;
-
-const ReviewBoard = styled.section`
-  display: flex;
-  flex-wrap: wrap;
-  width: 70%;
-  margin: 0 auto;
-  padding: 70px 0 80px;
-`;
-
-const ReviewBox = styled.div<ReviewBoxStyle>`
-  width: 23.5%;
-  padding: 0 30px 10px;
-  margin-bottom: 100px;
-  margin-right: ${(props) => (props.rightReview ? 0 : "2%")};
-  border-radius: 25px;
-  background: #fcf1ef;
-
-  .buttons {
-    display: flex;
-    margin: 30px 0 10px;
-  }
-
-  .select {
-    color: #da2a00;
-  }
-`;
-
-const Title = styled.h1<ReviewBoxStyle>`
-  font-size: ${(props) => (props.book ? "18px" : "22px")};
-  font-family: ${(props) => (props.book ? "" : "NanumMyeongjo")};
 `;
 
 const CircleButton = styled.button`
@@ -143,11 +134,6 @@ const CircleButton = styled.button`
   border-radius: 50%;
 `;
 
-const Grade = styled.div`
-  display: flex;
-  padding-top: 15px;
-`;
-
 const ReviewContent = styled.div`
   width: 100%;
   height: 278px;
@@ -156,7 +142,9 @@ const ReviewContent = styled.div`
 
   .contents {
     margin-top: 18px;
+    text-align: left;
     font-family: "IBMPlexSansKR-Light";
+    white-space: pre-line;
   }
 `;
 
@@ -175,10 +163,4 @@ const BookInfo = styled.div`
     padding: 15px 0 0 15px;
     align-self: center;
   }
-`;
-
-const Name = styled.div<ReviewBoxStyle>`
-  margin-top: 4px;
-  color: #727272;
-  font-size: ${(props) => props.book && "14px"};
 `;

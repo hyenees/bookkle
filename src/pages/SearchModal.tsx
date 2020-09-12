@@ -29,9 +29,12 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
           <BsSearch
             className="search-icon"
             size="20"
-            onClick={() =>
-              props.history.push("/booklist", { searchBook: searchBook })
-            }
+            onClick={() => {
+              props.history.push(`/booklist/${searchBook}`, {
+                searchBook: searchBook,
+              });
+              closeSearch();
+            }}
           />
         </ModalBox>
       </ModalLayout>

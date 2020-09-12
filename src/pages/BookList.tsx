@@ -1,11 +1,19 @@
 import React, { useEffect } from "react";
+import styled from "styled-components";
 import { RouteComponentProps } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "redux/reducers";
-import { BookState } from "redux/store/types";
 import axios from "axios";
 import Nav from "components/Nav";
-import { fetchBookList } from "redux/actions";
+import { fetchBookList, selectBook } from "redux/actions";
+import Layout from "widget/Layout";
+import ListBoard from "widget/ListBoard";
+import Name from "widget/Name";
+import ItemBox from "widget/ItemBox";
+import Title from "widget/Title";
+import TopTitle from "widget/TopTitle";
+import logo from "images/logo.png";
+import { BookImg, BookImgBox } from "widget/BookImg";
 
 interface BookListProps extends RouteComponentProps<any, any, BookListProps> {
   searchBook: string;
@@ -15,23 +23,50 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
   const { books } = useSelector((state: RootState) => state.BookReducer);
   const dispatch = useDispatch();
 
+  const { searchBook } = props.location.state;
+
   useEffect(() => {
     axios
       .get("https://dapi.kakao.com/v3/search/book?target=title", {
-        params: { query: props.location.state.searchBook },
+        params: { query: searchBook, size: 50 },
         headers: { Authorization: "KakaoAK e23535b3c49c44d77ffac09377ac9d58" },
       })
       .then((res) => {
-        console.log(res.data.documents);
         dispatch(fetchBookList(res.data.documents));
       });
-  }, [dispatch, props.location.state.searchBook]);
+  }, [dispatch, searchBook]);
 
   return (
     <>
-      {console.log(books)}
       <Nav />
-      <div className="Main">bookkle</div>
+      <Layout>
+        <TopTitle bookList>{searchBook}</TopTitle>
+        <ListBoard>
+          {books.map((book, idx: number) => (
+            <ItemBox
+              key={idx}
+              mode="bookList"
+              right={(idx + 1) % 4 === 0}
+              onClick={() => {
+                props.history.push("/post");
+                dispatch(selectBook(book.title, book.authors, book.thumbnail));
+              }}
+            >
+              <BookImgBox bookList logo={book.thumbnail === ""}>
+                <BookImg
+                  logo={book.thumbnail === ""}
+                  src={book.thumbnail === "" ? logo : book.thumbnail}
+                  alt="book-cover"
+                />
+              </BookImgBox>
+              <div className="book-info">
+                <Title>{book.title}</Title>
+                <Name>{book.authors.join(" · ")}</Name>
+              </div>
+            </ItemBox>
+          ))}
+        </ListBoard>
+      </Layout>
     </>
   );
 };
