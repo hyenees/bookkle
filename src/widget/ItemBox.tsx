@@ -23,10 +23,6 @@ const ItemBox = styled.div<ItemBoxStyle>`
     margin: 30px 0 10px;
   }
 
-  .select {
-    color: #da2a00;
-  }
-
   .book-info {
     text-align: center;
   }

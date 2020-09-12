@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import AccountModal from "pages/AccountModal";
+import AccountModal from "pages/Account/AccountModal";
 import SearchModal from "pages/SearchModal";
 import logo from "images/logo.png";
 import { MdAccountCircle } from "react-icons/md";
@@ -25,19 +25,19 @@ const Nav: React.FunctionComponent = (props) => {
           <img src={logo} alt="bookkle" />
           <Icons>
             <Icon>
+              <BiBookAdd
+                className="post"
+                size="26"
+                onClick={() => setIsOpenSearch(true)}
+              />
+            </Icon>
+            <Icon>
               <MdAccountCircle
                 className="accout-icon"
                 size="26"
                 onClick={() => {
                   setIsOpenAccount(true);
                 }}
-              />
-            </Icon>
-            <Icon>
-              <BiBookAdd
-                className="post"
-                size="26"
-                onClick={() => setIsOpenSearch(true)}
               />
             </Icon>
           </Icons>
