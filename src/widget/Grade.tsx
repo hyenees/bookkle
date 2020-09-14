@@ -3,7 +3,7 @@ import styled from "styled-components";
 const Grade = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 150px;
+  width: 120px;
   padding-top: 15px;
   color: #4a4a4a;
 

@@ -3,6 +3,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { BsSearch } from "react-icons/bs";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { ModalLayout } from "widget/Modal";
 
 interface SearchModalProps extends RouteComponentProps<any, any, any> {
   closeSearch: () => void;
@@ -43,17 +44,6 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
 };
 
 export default withRouter(SearchModal);
-
-const ModalLayout = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 150;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-`;
 
 const slideToBottom = keyframes`
    0%{

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface TopTitleStyle {
-  mode: "bookList" | "main" | "quote" | "post";
+  mode: "bookList" | "main" | "quote" | "post" | "mypage";
 }
 
 const handleFontSizeType = (mode: string) => {
@@ -21,6 +21,8 @@ const handlePaddingType = (mode: string) => {
       return "50px 20px";
     case "quote":
       return "20px 0 10px";
+    case "mypage":
+      return 0;
     default:
       return "30px 20px";
   }
@@ -28,8 +30,6 @@ const handlePaddingType = (mode: string) => {
 
 const TopTitle = styled.h1<TopTitleStyle>`
   padding: ${({ mode }) => handlePaddingType(mode)};
-  /* font-family: "NanumMyeongjoBold"; */
-  /* font-family: "NanumMyeongjo"; */
   font-family: "RIDIBatang";
   font-size: ${({ mode }) => handleFontSizeType(mode)};
   text-align: center;
