@@ -23,7 +23,7 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
             className="close-icon"
           />
           <SearchInput
-            placeholder="책을 검색해주세요."
+            placeholder="리뷰하고 싶은 책 제목을 입력하세요."
             onChange={(e) => setSearchBook(e.target.value)}
           />
           <BsSearch

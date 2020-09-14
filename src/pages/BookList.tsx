@@ -40,7 +40,7 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
     <>
       <Nav />
       <Layout>
-        <TopTitle bookList>{searchBook}</TopTitle>
+        <TopTitle mode="bookList">{searchBook}</TopTitle>
         <ListBoard>
           {books.map((book, idx: number) => (
             <ItemBox
@@ -48,7 +48,11 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
               mode="bookList"
               right={(idx + 1) % 4 === 0}
               onClick={() => {
-                props.history.push("/post");
+                if (localStorage.getItem("token")) {
+                  props.history.push("/post");
+                } else {
+                  alert("로그인이 필요한 서비스입니다.");
+                }
                 dispatch(selectBook(book.title, book.authors, book.thumbnail));
               }}
             >

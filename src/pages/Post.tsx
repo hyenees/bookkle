@@ -53,6 +53,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
       .catch((err) => {
         console.log(err.response);
       });
+    props.history.push("./mypage");
   };
 
   return (
@@ -61,7 +62,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
       <Nav />
       <Layout>
         <PostBoard>
-          <TopTitle>리뷰를 남겨주세요.</TopTitle>
+          <TopTitle mode="post">리뷰를 남겨주세요.</TopTitle>
 
           {selectedBook !== null && (
             <BookInfo>
@@ -114,6 +115,8 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
             <InputBox>
               <Label>좋았던 문구</Label>
               <Input
+                type="text"
+                maxLength={78}
                 onChange={(e) =>
                   setReview({ ...review, quote: e.target.value })
                 }
@@ -139,15 +142,15 @@ const PostBoard = styled.section`
 const PostBox = styled.div`
   width: 100%;
   padding: 40px 0 40px;
-  border-top: 1px solid;
-  border-bottom: 1px solid;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 `;
 
 const BookInfo = styled.div`
   display: flex;
   justify-content: center;
   width: 60%;
-  margin: 60px auto 30px;
+  margin: 30px auto 40px;
   .book-title {
     padding: 15px 0 0 15px;
     align-self: center;
@@ -161,6 +164,7 @@ const InputBox = styled.div`
 
 const Label = styled.label`
   width: 220px;
+  font-size: 18px;
 `;
 
 const TextArea = styled.textarea`

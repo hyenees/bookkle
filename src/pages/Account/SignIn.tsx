@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { API_URL } from "config";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+// import { RouteComponentProps, withRouter } from "react-router-dom";
 import { GoMail } from "react-icons/go";
 import { RiLock2Line } from "react-icons/ri";
 import Input from "widget/Input";
