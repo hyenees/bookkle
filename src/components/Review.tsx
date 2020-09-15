@@ -1,33 +1,47 @@
 import React from "react";
 import styled from "styled-components";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
 import { BsPersonPlusFill } from "react-icons/bs";
-import { ReviewInfo } from "pages/Main";
+import { ReviewData } from "type";
 import Name from "widget/Name";
 import ItemBox from "widget/ItemBox";
 import Title from "widget/Title";
 import Grade from "widget/Grade";
 import { CircleButton, TextButton, Buttons } from "widget/SmallButton";
+import axios from "axios";
+import { API_URL } from "config";
 
-interface ReviewProps {
-  review: ReviewInfo;
+interface ReviewProps extends RouteComponentProps {
+  review: ReviewData;
   idx: number;
-  openDetail?: () => void;
+  openDetail?: (id: number) => void;
   mypage?: boolean;
+  deleteReview?: (id: number) => void;
 }
 
+const recommendReview = (id: number) => {
+  axios
+    .post(
+      `${API_URL}/reviews/like`,
+      { review: id },
+      { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
+    )
+    .then((res) => console.log(res));
+};
+
 const Review: React.FunctionComponent<ReviewProps> = (props) => {
-  const { review, idx, openDetail, mypage } = props;
+  const { review, idx, openDetail, mypage, deleteReview } = props;
   return (
     <ItemBox
       mode="review"
       key={idx}
       right={(idx + 1) % 4 === 0}
-      onClick={openDetail}
+      onClick={() => openDetail && openDetail(review.id)}
     >
       <BookInfo>
         <img src={review.book_detail.image} alt="" />
@@ -56,9 +70,12 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
       <Buttons mode="text">
         <Buttons mode="default">
           <CircleButton mode="default">
-            <HiHeart size="18" />
+            {/* <HiHeart size="18" /> */}
             {review.recommend_count}
-            {/* <HiOutlineHeart/> */}
+            <HiOutlineHeart
+              size="18"
+              onClick={() => recommendReview(review.id)}
+            />
           </CircleButton>
           <CircleButton mode="default">
             <BsPersonPlusFill size="18" />
@@ -67,8 +84,14 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
         </Buttons>
         {mypage && (
           <Buttons mode="default">
-            <TextButton>수정</TextButton>
-            <TextButton>삭제</TextButton>
+            <TextButton
+              onClick={() => props.history.push(`/posting/${review.id}`)}
+            >
+              수정
+            </TextButton>
+            <TextButton onClick={() => deleteReview && deleteReview(review.id)}>
+              삭제
+            </TextButton>
           </Buttons>
         )}
       </Buttons>
@@ -76,7 +99,7 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
   );
 };
 
-export default Review;
+export default withRouter(Review);
 
 const ReviewContent = styled.div`
   width: 100%;

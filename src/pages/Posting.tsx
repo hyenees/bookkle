@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
-import { RouteComponentProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "redux/reducers";
 import Nav from "components/Nav";
 import { API_URL } from "config";
+import { InputReview } from "type";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -18,21 +19,33 @@ import Name from "widget/Name";
 import Grade from "widget/Grade";
 import Button from "widget/Button";
 
-interface Review {
-  title: string;
-  content: string;
-  quote: string | null;
-  rating: number | null;
+interface PostingProps {
+  id: string;
 }
 
-const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
+const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
+  props
+) => {
   const { selectedBook } = useSelector((state: RootState) => state.BookReducer);
-  const [review, setReview] = useState<Review>({
+  const [review, setReview] = useState<InputReview>({
     title: "",
     content: "",
     quote: null,
     rating: null,
   });
+  const [revise, setRevise] = useState<boolean>(false);
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/reviews/${props.match.params.id}`, {
+        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        console.log(res);
+        setReview(res.data);
+        setRevise(true);
+      });
+  }, [props.match.params.id]);
 
   const postReview = () => {
     axios
@@ -49,16 +62,35 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
         },
         { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
       )
+      .then((res) => console.log("post", res))
+      .catch((err) => {
+        console.log(err.response);
+      });
+    props.history.push("/mypage");
+  };
+
+  const updateReview = () => {
+    axios
+      .put(
+        `${API_URL}/reviews/${props.match.params.id}`,
+        {
+          title: review.title,
+          content: review.content,
+          quote: review.quote,
+          rating: review.rating,
+        },
+        { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
+      )
       .then((res) => console.log(res))
       .catch((err) => {
         console.log(err.response);
       });
-    props.history.push("./mypage");
+    props.history.push("/mypage");
   };
 
   return (
     <>
-      {console.log(review.quote)}
+      {console.log(revise)}
       <Nav />
       <Layout>
         <PostBoard>
@@ -79,6 +111,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
             <InputBox>
               <Label>제목</Label>
               <Input
+                value={review.title}
                 onChange={(e) =>
                   setReview({ ...review, title: e.target.value })
                 }
@@ -87,6 +120,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
             <InputBox>
               <Label>감상평</Label>
               <TextArea
+                value={review.content}
                 onChange={(e) =>
                   setReview({ ...review, content: e.target.value })
                 }
@@ -123,7 +157,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
               />
             </InputBox>
           </PostBox>
-          <Button posting onClick={postReview}>
+          <Button posting onClick={revise ? updateReview : postReview}>
             등록하기
           </Button>
         </PostBoard>
@@ -132,7 +166,7 @@ const Post: React.FunctionComponent<RouteComponentProps> = (props) => {
   );
 };
 
-export default Post;
+export default Posting;
 
 const PostBoard = styled.section`
   width: 50%;

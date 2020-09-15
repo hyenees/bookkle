@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import styled from "styled-components";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
@@ -7,7 +6,7 @@ import { CgSmileNone } from "react-icons/cg";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
 import { BsPersonPlusFill } from "react-icons/bs";
-import { BookDetail, Nickname } from "./Main";
+import { ReviewData } from "type";
 import { ModalLayout, ModalBox } from "widget/Modal";
 import Title from "widget/Title";
 import Name from "widget/Name";
@@ -17,70 +16,51 @@ import { CircleButton, Buttons } from "widget/SmallButton";
 
 interface ReviewDetailProps {
   closeDetail: () => void;
-}
-
-interface ReviewData {
-  id: number;
-  book_detail: BookDetail;
-  user_info: Nickname;
-  title: string;
-  book: number;
-  user: number;
-  quote: string;
-  recommend_count: number;
-  rating: number;
-  content: string;
+  reviewDetail: ReviewData | null;
 }
 
 const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
-  const [reviewData, setReviewData] = useState<ReviewData | null>(null);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/data/reviewDetail.json")
-      .then((res: any) => {
-        console.log(res);
-        setReviewData(res.data.detail);
-      });
-  }, []);
-
+  const { reviewDetail, closeDetail } = props;
   return (
-    <ModalLayout onClick={props.closeDetail}>
-      {console.log(reviewData)}
+    <ModalLayout onClick={closeDetail}>
+      {console.log(reviewDetail)}
       <ModalBox onClick={(e) => e.stopPropagation()} review>
-        {reviewData && (
+        {reviewDetail && (
           <>
             <BookInfo>
               <BookImgBox review>
-                <BookImg src={reviewData.book_detail.image} alt="book-cover" />
+                <BookImg
+                  src={reviewDetail.book_detail.image}
+                  alt="book-cover"
+                />
               </BookImgBox>
               <div className="book-title">
-                <Title>{reviewData.book_detail.title}</Title>
-                <Name>{reviewData.book_detail.author}</Name>
+                <Title>{reviewDetail.book_detail.title}</Title>
+                <Name>{reviewDetail.book_detail.author}</Name>
                 <Grade>
                   <CgSmile
                     size="30"
-                    className={reviewData.rating === 1 ? "select" : ""}
+                    className={reviewDetail.rating === 1 ? "select" : ""}
                   />
                   <CgSmileNone
                     size="30"
-                    className={reviewData.rating === 2 ? "select" : ""}
+                    className={reviewDetail.rating === 2 ? "select" : ""}
                   />
                   <CgSmileSad
                     size="30"
-                    className={reviewData.rating === 3 ? "select" : ""}
+                    className={reviewDetail.rating === 3 ? "select" : ""}
                   />
                 </Grade>
               </div>
             </BookInfo>
             <ReviewContent>
-              <Title review>{reviewData.title}</Title>
-              <Name>{reviewData.user_info.nickname}</Name>
-              <div className="contents">{reviewData.content}</div>
+              <Title review>{reviewDetail.title}</Title>
+              <Name>{reviewDetail.user_info.nickname}</Name>
+              <div className="contents">{reviewDetail.content}</div>
               <Buttons mode="detail">
                 <CircleButton mode="detail">
-                  <HiHeart size="18" />
-                  {/* <HiOutlineHeart/> */}
+                  {/* <HiHeart size="18" /> */}
+                  <HiOutlineHeart size="18" />
                 </CircleButton>
                 <CircleButton mode="detail">
                   <BsPersonPlusFill size="18" />
@@ -88,7 +68,7 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
                 </CircleButton>
               </Buttons>
             </ReviewContent>
-            <Quote>{reviewData.quote}</Quote>
+            <Quote>{reviewDetail.quote}</Quote>
           </>
         )}
       </ModalBox>

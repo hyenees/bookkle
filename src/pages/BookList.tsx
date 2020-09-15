@@ -49,7 +49,7 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
               right={(idx + 1) % 4 === 0}
               onClick={() => {
                 if (localStorage.getItem("token")) {
-                  props.history.push("/post");
+                  props.history.push("/posting");
                 } else {
                   alert("로그인이 필요한 서비스입니다.");
                 }

@@ -38,6 +38,14 @@ const TopTitle = styled.h1<TopTitleStyle>`
   span {
     background: rgba(211, 73, 41, 0.3);
   }
+
+  .followers {
+    font-size: 24px;
+    color: #727272;
+    &.count {
+      color: #d3492a;
+    }
+  }
 `;
 
 export default TopTitle;

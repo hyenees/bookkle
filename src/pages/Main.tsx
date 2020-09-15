@@ -4,6 +4,7 @@ import axios from "axios";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
+import { ReviewData, QuoteInfo } from "type";
 import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
@@ -11,45 +12,23 @@ import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
 
-export interface BookDetail {
-  title: string;
-  author: string;
-  image: string;
-}
-
-export interface Nickname {
-  nickname: string;
-}
-
-export interface ReviewInfo {
-  book_detail: BookDetail;
-  user_info: Nickname;
-  title: string;
-  rating: number;
-  content: string;
-  id: number;
-  recommend_count: never;
-}
-
-interface QuoteInfo {
-  book_title: string;
-  book_author: string;
-  quote: string;
-}
-
 const Main: React.FunctionComponent = () => {
-  const [data, setData] = useState<Array<ReviewInfo>>([]);
+  const [data, setData] = useState<Array<ReviewData>>([]);
+  const [reviewDetail, setReviewDetail] = useState<ReviewData | null>(null);
   const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
 
   useEffect(() => {
-    // axios.get(`${API_URL}/reviews/quote`).then((res) => {
-    //   console.log(res);
-    //   setRandomQuote(res.data);
-    // });
+    axios.get(`${API_URL}/reviews/quote`).then((res) => {
+      console.log(res);
+      setRandomQuote(res.data);
+    });
+  }, []);
+
+  useEffect(() => {
     axios
-      .get("http://localhost:3000/data/reviews.json")
-      // .get(`${API_URL}/reviews`)
+      // .get("http://localhost:3000/data/reviews.json")
+      .get(`${API_URL}/reviews`)
       .then((res) => {
         console.log(res);
         setData(res.data.results);
@@ -58,6 +37,14 @@ const Main: React.FunctionComponent = () => {
 
   const closeDetail = () => {
     setIsReviewOpened(false);
+  };
+
+  const openDetail = (id: number) => {
+    setIsReviewOpened(true);
+    axios.get(`${API_URL}/reviews/${id}`).then((res) => {
+      console.log(res);
+      setReviewDetail(res.data);
+    });
   };
 
   return (
@@ -88,16 +75,14 @@ const Main: React.FunctionComponent = () => {
         </SentenceBox>
 
         <ListBoard>
-          {data.map((review: ReviewInfo, idx: number) => (
-            <Review
-              review={review}
-              idx={idx}
-              openDetail={() => setIsReviewOpened(true)}
-            />
+          {data.map((review: ReviewData, idx: number) => (
+            <Review review={review} idx={idx} openDetail={openDetail} />
           ))}
         </ListBoard>
       </Layout>
-      {isReviewOpened && <ReviewDetail closeDetail={closeDetail} />}
+      {isReviewOpened && (
+        <ReviewDetail closeDetail={closeDetail} reviewDetail={reviewDetail} />
+      )}
     </>
   );
 };
