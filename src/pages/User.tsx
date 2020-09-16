@@ -2,42 +2,54 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { getReviewList } from "redux/actions";
 import { API_URL } from "config";
 import Nav from "components/Nav";
 import Review from "components/Review";
-import { ReviewData, Profile } from "type";
+import { BsPersonPlusFill } from "react-icons/bs";
+import { BsPersonPlus } from "react-icons/bs";
+import { Profile } from "type";
 import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
+import { CircleButton } from "widget/SmallButton";
 
-const MyPage: React.FunctionComponent = (props) => {
-  const [data, setData] = useState<Array<ReviewData>>([]);
+interface UserProps {
+  id: string;
+}
+
+const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
+  props
+) => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isClickedFollowBtn, setIsClickedFollowBtn] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
       // .get("http://localhost:3000/data/reviews.json")
-      .get(`${API_URL}/accounts/profile`, {
+      .get(`${API_URL}/accounts/profile/${props.match.params.id}`, {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       })
       .then((res) => {
         // console.log(res.data);
         setProfile(res.data);
       });
-  }, []);
+  }, [props.match.params.id]);
 
   useEffect(() => {
     console.log("A");
     axios
-      // .get("http://localhost:3000/data/reviews.json")
-      .get(`${API_URL}/accounts/my-reviews`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
+      .get("http://localhost:3000/data/reviews.json")
+      // .get(`${API_URL}/accounts/my-reviews/${props.match.params.id}`, {
+      //   headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+      // })
       .then((res) => {
         console.log("myReview", res.data.results);
-        setData(res.data.results);
+        dispatch(getReviewList(res.data.results));
       });
-  }, []);
+  }, [dispatch]);
 
   const deleteReview = (id: number) => {
     axios
@@ -46,17 +58,28 @@ const MyPage: React.FunctionComponent = (props) => {
       })
       .then((res) => {
         console.log("delete", res);
+        dispatch(getReviewList(res.data.results));
       });
+  };
+
+  const followUser = () => {
+    setIsClickedFollowBtn(!isClickedFollowBtn);
   };
 
   return (
     <>
-      {console.log("B")}
       <Nav />
       <Layout>
         <UserInfo>
           <TopTitle mode="mypage">
-            안녕하세요, &nbsp;{profile?.nickname}님!
+            안녕하세요, &nbsp;{profile?.nickname}님!&nbsp;&nbsp;
+            <CircleButton mode="default" onClick={followUser}>
+              {isClickedFollowBtn ? (
+                <BsPersonPlusFill size="26" />
+              ) : (
+                <BsPersonPlus size="26" />
+              )}
+            </CircleButton>
           </TopTitle>
           <TopTitle mode="mypage">
             <div className="followers">Followers</div>
@@ -64,21 +87,14 @@ const MyPage: React.FunctionComponent = (props) => {
           </TopTitle>
         </UserInfo>
         <ListBoard>
-          {data.map((review: ReviewData, idx: number) => (
-            <Review
-              review={review}
-              idx={idx}
-              mypage={true}
-              deleteReview={deleteReview}
-            />
-          ))}
+          <Review myId={props.match.params.id} deleteReview={deleteReview} />
         </ListBoard>
       </Layout>
     </>
   );
 };
 
-export default MyPage;
+export default User;
 
 const UserInfo = styled.div`
   display: flex;

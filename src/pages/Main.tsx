@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { getReviewList } from "redux/actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
-import { ReviewData, QuoteInfo } from "type";
+import { ReviewData } from "redux/store/types";
+import { QuoteInfo } from "type";
 import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
 import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
+import Button from "widget/Button";
+
+const LIMIT = 8;
 
 const Main: React.FunctionComponent = () => {
-  const [data, setData] = useState<Array<ReviewData>>([]);
   const [reviewDetail, setReviewDetail] = useState<ReviewData | null>(null);
   const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number>(0);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios.get(`${API_URL}/reviews/quote`).then((res) => {
@@ -27,13 +35,23 @@ const Main: React.FunctionComponent = () => {
 
   useEffect(() => {
     axios
-      // .get("http://localhost:3000/data/reviews.json")
-      .get(`${API_URL}/reviews`)
+      .get("http://localhost:3000/data/reviews.json")
+      // .get(`${API_URL}/reviews)
       .then((res) => {
         console.log(res);
-        setData(res.data.results);
+        dispatch(getReviewList(res.data.results));
       });
-  }, []);
+  }, [dispatch]);
+
+  const viewMoreReviews = () => {
+    axios
+      .get(`${API_URL}/reviews/?limit=${LIMIT}&offset=${offset}`)
+      .then((res) => {
+        console.log(res);
+        dispatch(getReviewList(res.data.results));
+      });
+    setOffset(offset + LIMIT);
+  };
 
   const closeDetail = () => {
     setIsReviewOpened(false);
@@ -41,10 +59,14 @@ const Main: React.FunctionComponent = () => {
 
   const openDetail = (id: number) => {
     setIsReviewOpened(true);
-    axios.get(`${API_URL}/reviews/${id}`).then((res) => {
-      console.log(res);
-      setReviewDetail(res.data);
-    });
+    axios
+      // .get(`${API_URL}/reviews/${id}`)
+      .get("http://localhost:3000/data/reviewDetail.json")
+      .then((res) => {
+        console.log(res);
+        // setReviewDetail(res.data);
+        setReviewDetail(res.data.detail);
+      });
   };
 
   return (
@@ -59,11 +81,11 @@ const Main: React.FunctionComponent = () => {
             <ImQuotesLeft size="26" />
             <div className="top-quote"></div>
           </QuoteIcon>
-          <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle>
-          {/* <TopTitle mode="quote">
+          {/* <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle> */}
+          <TopTitle mode="quote">
             언제 어디서나 추함은 아름다운면을 지니고 있다. 아무도 그것을
             알아채지 못한 곳에서 그것들을 발견하는 것은 매우 짜릿하다.
-          </TopTitle> */}
+          </TopTitle>
           <div className="quote-info">
             {randomQuote && randomQuote.book_author}&nbsp; &lt;
             {randomQuote && randomQuote.book_title}&gt;
@@ -73,11 +95,9 @@ const Main: React.FunctionComponent = () => {
             <ImQuotesRight size="26" />
           </QuoteIcon>
         </SentenceBox>
-
         <ListBoard>
-          {data.map((review: ReviewData, idx: number) => (
-            <Review review={review} idx={idx} openDetail={openDetail} />
-          ))}
+          <Review openDetail={openDetail} />
+          <Button onClick={viewMoreReviews}>더 보기</Button>
         </ListBoard>
       </Layout>
       {isReviewOpened && (

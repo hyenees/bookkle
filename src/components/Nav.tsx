@@ -6,6 +6,7 @@ import SearchModal from "pages/SearchModal";
 import logo from "images/logo.png";
 import { MdAccountCircle } from "react-icons/md";
 import { BiBookAdd } from "react-icons/bi";
+import { Buttons } from "widget/SmallButton";
 
 const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
   const [isOpenAccount, setIsOpenAccount] = useState<boolean>(false);
@@ -23,29 +24,41 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
     <>
       <NavLayout>
         <NavBox>
-          <img src={logo} alt="bookkle" />
-          <Icons>
+          <img
+            src={logo}
+            alt="bookkle"
+            onClick={() => props.history.push("/")}
+          />
+          <Buttons mode="nav">
             <Icon>
               <BiBookAdd
                 className="post"
                 size="26"
+                color="#4a4a4a"
                 onClick={() => setIsOpenSearch(true)}
               />
             </Icon>
             <Icon>
               {localStorage.getItem("token") ? (
-                <div onClick={() => props.history.push("/mypage")}>Hello</div>
+                <div
+                  onClick={() =>
+                    props.history.push(`/user/${localStorage.getItem("myId")}`)
+                  }
+                >
+                  Hello
+                </div>
               ) : (
                 <MdAccountCircle
                   className="accout-icon"
                   size="26"
+                  color="#4a4a4a"
                   onClick={() => {
                     setIsOpenAccount(true);
                   }}
                 />
               )}
             </Icon>
-          </Icons>
+          </Buttons>
         </NavBox>
       </NavLayout>
       {isOpenAccount && <AccountModal closeAccount={closeAccount} />}
@@ -74,6 +87,7 @@ const NavBox = styled.div`
   img {
     max-height: 44px;
     width: auto;
+    cursor: pointer;
   }
   @media (min-width: 1200px) {
     width: 1170px;
@@ -81,15 +95,6 @@ const NavBox = styled.div`
 
   @media (min-width: 768px) and (max-width: 1200px) {
     width: 750px;
-  }
-`;
-
-const Icons = styled.div`
-  display: flex;
-  margin-right: -10px;
-
-  * {
-    color: #4a4a4a;
   }
 `;
 

@@ -33,6 +33,7 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
       .then((res) => {
         console.log(res.data.token);
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("myId", res.data.user_id);
       });
   };
 

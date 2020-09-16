@@ -1,29 +1,56 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "redux/reducers";
+import { clickHeartBtn } from "redux/actions";
+import { ReviewData } from "redux/store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
-import { BsPersonPlusFill } from "react-icons/bs";
-import { ReviewData } from "type";
+import { API_URL } from "config";
 import { ModalLayout, ModalBox } from "widget/Modal";
 import Title from "widget/Title";
 import Name from "widget/Name";
 import { BookImg, BookImgBox } from "widget/BookImg";
 import Grade from "widget/Grade";
-import { CircleButton, Buttons } from "widget/SmallButton";
+import { CircleButton } from "widget/SmallButton";
 
 interface ReviewDetailProps {
   closeDetail: () => void;
   reviewDetail: ReviewData | null;
+  // recommendReview: (e: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 }
 
 const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
+  const { reviewIds } = useSelector((state: RootState) => state.BookReducer);
   const { reviewDetail, closeDetail } = props;
+  const dispatch = useDispatch();
+
+  const recommendReview = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number
+  ) => {
+    e.stopPropagation();
+    dispatch(clickHeartBtn(id));
+
+    axios
+      .post(
+        `${API_URL}/reviews/like`,
+        { review: id },
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => console.log(res));
+  };
+
   return (
     <ModalLayout onClick={closeDetail}>
-      {console.log(reviewDetail)}
       <ModalBox onClick={(e) => e.stopPropagation()} review>
         {reviewDetail && (
           <>
@@ -57,16 +84,22 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
               <Title review>{reviewDetail.title}</Title>
               <Name>{reviewDetail.user_info.nickname}</Name>
               <div className="contents">{reviewDetail.content}</div>
-              <Buttons mode="detail">
-                <CircleButton mode="detail">
-                  {/* <HiHeart size="18" /> */}
-                  <HiOutlineHeart size="18" />
-                </CircleButton>
-                <CircleButton mode="detail">
-                  <BsPersonPlusFill size="18" />
-                  {/* <BsPersonPlus/> */}
-                </CircleButton>
-              </Buttons>
+              <CircleButton
+                mode="detail"
+                onClick={(e) => recommendReview(e, reviewDetail.id)}
+              >
+                {reviewIds.includes(reviewDetail.id) ? (
+                  <>
+                    <HiHeart size="18" />
+                    {reviewDetail.recommend_count + 1}
+                  </>
+                ) : (
+                  <>
+                    <HiOutlineHeart size="18" />
+                    {reviewDetail.recommend_count}
+                  </>
+                )}
+              </CircleButton>
             </ReviewContent>
             <Quote>{reviewDetail.quote}</Quote>
           </>

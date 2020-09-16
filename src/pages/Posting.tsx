@@ -36,15 +36,17 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
   const [revise, setRevise] = useState<boolean>(false);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/reviews/${props.match.params.id}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((res) => {
-        console.log(res);
-        setReview(res.data);
-        setRevise(true);
-      });
+    if (props.match.params.id !== undefined) {
+      axios
+        .get(`${API_URL}/reviews/${props.match.params.id}`, {
+          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+        })
+        .then((res) => {
+          console.log(res);
+          setReview(res.data);
+          setRevise(true);
+        });
+    }
   }, [props.match.params.id]);
 
   const postReview = () => {
@@ -62,11 +64,13 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
         },
         { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
       )
-      .then((res) => console.log("post", res))
+      .then((res) => {
+        console.log("post", res);
+        props.history.push("/mypage");
+      })
       .catch((err) => {
         console.log(err.response);
       });
-    props.history.push("/mypage");
   };
 
   const updateReview = () => {
@@ -81,16 +85,17 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
         },
         { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
       )
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res);
+        props.history.push("/mypage");
+      })
       .catch((err) => {
         console.log(err.response);
       });
-    props.history.push("/mypage");
   };
 
   return (
     <>
-      {console.log(revise)}
       <Nav />
       <Layout>
         <PostBoard>
@@ -120,6 +125,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
             <InputBox>
               <Label>감상평</Label>
               <TextArea
+                placeholder="500자 이내로 작성하세요."
                 value={review.content}
                 onChange={(e) =>
                   setReview({ ...review, content: e.target.value })
@@ -149,6 +155,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
             <InputBox>
               <Label>좋았던 문구</Label>
               <Input
+                value={review.quote === null ? "" : review.quote}
                 type="text"
                 maxLength={78}
                 onChange={(e) =>
@@ -207,4 +214,5 @@ const TextArea = styled.textarea`
   margin-top: 10px;
   padding: 11px;
   border: 1px solid #f4f4f4;
+  color: #727272;
 `;
