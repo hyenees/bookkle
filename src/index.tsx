@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Routes from "Routes";
 import { Provider } from "react-redux";
-import configureStore from "redux/store/configureStore";
+import configureStore from "store/configureStore";
 
 // 스토어를 생성한다
 const store = configureStore();

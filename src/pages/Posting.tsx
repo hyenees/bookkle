@@ -3,10 +3,10 @@ import { RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { RootState } from "redux/reducers";
+import { RootState } from "reducers";
 import Nav from "components/Nav";
 import { API_URL } from "config";
-import { InputReview } from "type";
+import { BookDetail } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -23,11 +23,20 @@ interface PostingProps {
   id: string;
 }
 
+export interface InputReview {
+  book_detail: BookDetail | null;
+  title: string;
+  content: string;
+  quote: string | null;
+  rating: number | null;
+}
+
 const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
   props
 ) => {
   const { selectedBook } = useSelector((state: RootState) => state.BookReducer);
   const [review, setReview] = useState<InputReview>({
+    book_detail: null,
     title: "",
     content: "",
     quote: null,
@@ -66,7 +75,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
       )
       .then((res) => {
         console.log("post", res);
-        props.history.push("/mypage");
+        props.history.push(`/user/${localStorage.getItem("myId")}`);
       })
       .catch((err) => {
         console.log(err.response);
@@ -87,7 +96,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
       )
       .then((res) => {
         console.log(res);
-        props.history.push("/mypage");
+        props.history.push(`/user/${localStorage.getItem("myId")}`);
       })
       .catch((err) => {
         console.log(err.response);
@@ -100,8 +109,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
       <Layout>
         <PostBoard>
           <TopTitle mode="post">리뷰를 남겨주세요.</TopTitle>
-
-          {selectedBook !== null && (
+          {selectedBook !== null ? (
             <BookInfo>
               <BookImgBox>
                 <BookImg src={selectedBook?.thumbnail} alt="book-cover" />
@@ -109,6 +117,16 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
               <div className="book-title">
                 <Title>{selectedBook.title}</Title>
                 <Name>{selectedBook.authors.join(" · ")}</Name>
+              </div>
+            </BookInfo>
+          ) : (
+            <BookInfo>
+              <BookImgBox>
+                <BookImg src={review.book_detail?.image} alt="book-cover" />
+              </BookImgBox>
+              <div className="book-title">
+                <Title>{review.book_detail?.title}</Title>
+                <Name>{review.book_detail?.author}</Name>
               </div>
             </BookInfo>
           )}

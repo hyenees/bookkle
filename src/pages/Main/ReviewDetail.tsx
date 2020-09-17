@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "redux/reducers";
-import { clickHeartBtn } from "redux/actions";
-import { ReviewData } from "redux/store/types";
+import { RootState } from "reducers";
+import { clickHeartBtn } from "actions";
+import { ReviewData } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -25,7 +25,7 @@ interface ReviewDetailProps {
 }
 
 const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
-  const { reviewIds } = useSelector((state: RootState) => state.BookReducer);
+  const { reviewIds } = useSelector((state: RootState) => state.ReviewReducer);
   const { reviewDetail, closeDetail } = props;
   const dispatch = useDispatch();
 
@@ -88,9 +88,21 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
                 mode="detail"
                 onClick={(e) => recommendReview(e, reviewDetail.id)}
               >
-                {reviewIds.includes(reviewDetail.id) ? (
+                {reviewDetail.is_like ? (
+                  reviewIds.includes(reviewDetail.id) ? (
+                    <>
+                      <HiOutlineHeart size="18" />
+                      {reviewDetail.recommend_count - 1}
+                    </>
+                  ) : (
+                    <>
+                      <HiHeart size="18" color="#d3492a" />
+                      {reviewDetail.recommend_count}
+                    </>
+                  )
+                ) : reviewIds.includes(reviewDetail.id) ? (
                   <>
-                    <HiHeart size="18" />
+                    <HiHeart size="18" color="#d3492a" />
                     {reviewDetail.recommend_count + 1}
                   </>
                 ) : (

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { getReviewList } from "redux/actions";
+import { getReviewList, addReviewList } from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
-import { ReviewData } from "redux/store/types";
-import { QuoteInfo } from "type";
+import { ReviewData } from "store/types";
 import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
@@ -16,14 +15,19 @@ import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
 import Button from "widget/Button";
 
+export interface QuoteInfo {
+  book_title: string;
+  book_author: string;
+  quote: string;
+}
+
 const LIMIT = 8;
 
 const Main: React.FunctionComponent = () => {
   const [reviewDetail, setReviewDetail] = useState<ReviewData | null>(null);
   const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
-  const [offset, setOffset] = useState<number>(0);
-
+  const [offset, setOffset] = useState<number>(8);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,8 +39,17 @@ const Main: React.FunctionComponent = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/data/reviews.json")
-      // .get(`${API_URL}/reviews)
+      // .get("http://localhost:3000/data/reviews.json")
+      .get(
+        `${API_URL}/reviews`,
+        localStorage.getItem("token")
+          ? {
+              headers: {
+                Authorization: `Token ${localStorage.getItem("token")}`,
+              },
+            }
+          : undefined
+      )
       .then((res) => {
         console.log(res);
         dispatch(getReviewList(res.data.results));
@@ -45,10 +58,14 @@ const Main: React.FunctionComponent = () => {
 
   const viewMoreReviews = () => {
     axios
-      .get(`${API_URL}/reviews/?limit=${LIMIT}&offset=${offset}`)
+      .get(`${API_URL}/reviews?limit=${LIMIT}&offset=${offset}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
       .then((res) => {
         console.log(res);
-        dispatch(getReviewList(res.data.results));
+        dispatch(addReviewList(res.data.results));
       });
     setOffset(offset + LIMIT);
   };
@@ -60,12 +77,15 @@ const Main: React.FunctionComponent = () => {
   const openDetail = (id: number) => {
     setIsReviewOpened(true);
     axios
-      // .get(`${API_URL}/reviews/${id}`)
-      .get("http://localhost:3000/data/reviewDetail.json")
+      .get(`${API_URL}/reviews/${id}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      // .get("http://localhost:3000/data/reviewDetail.json")
       .then((res) => {
-        console.log(res);
-        // setReviewDetail(res.data);
-        setReviewDetail(res.data.detail);
+        console.log("detail", res);
+        setReviewDetail(res.data);
       });
   };
 
@@ -81,11 +101,11 @@ const Main: React.FunctionComponent = () => {
             <ImQuotesLeft size="26" />
             <div className="top-quote"></div>
           </QuoteIcon>
-          {/* <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle> */}
-          <TopTitle mode="quote">
+          <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle>
+          {/* <TopTitle mode="quote">
             언제 어디서나 추함은 아름다운면을 지니고 있다. 아무도 그것을
             알아채지 못한 곳에서 그것들을 발견하는 것은 매우 짜릿하다.
-          </TopTitle>
+          </TopTitle> */}
           <div className="quote-info">
             {randomQuote && randomQuote.book_author}&nbsp; &lt;
             {randomQuote && randomQuote.book_title}&gt;
@@ -97,8 +117,10 @@ const Main: React.FunctionComponent = () => {
         </SentenceBox>
         <ListBoard>
           <Review openDetail={openDetail} />
-          <Button onClick={viewMoreReviews}>더 보기</Button>
         </ListBoard>
+        <Button posting onClick={viewMoreReviews}>
+          더 보기
+        </Button>
       </Layout>
       {isReviewOpened && (
         <ReviewDetail closeDetail={closeDetail} reviewDetail={reviewDetail} />

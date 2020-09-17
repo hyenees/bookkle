@@ -33,7 +33,9 @@ export const CircleButton = styled.button<ButtonStyle>`
   border-radius: 50%;
   color: #4a4a4a;
   &:hover {
-    background: #f4f4f4;
+    background: ${(props) =>
+      props.mode === "default" ? "#f4f4f4" : "rgba(211, 73, 41, 0.1)"};
+    color: #333;
   }
 `;
 

@@ -3,9 +3,9 @@ import styled from "styled-components";
 import axios from "axios";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "redux/reducers";
-import { clickHeartBtn } from "redux/actions";
-import { ReviewData } from "redux/store/types";
+import { RootState } from "reducers";
+import { clickHeartBtn } from "actions";
+import { ReviewData } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -26,7 +26,7 @@ interface ReviewProps extends RouteComponentProps {
 
 const Review: React.FunctionComponent<ReviewProps> = (props) => {
   const { reviews, reviewIds } = useSelector(
-    (state: RootState) => state.BookReducer
+    (state: RootState) => state.ReviewReducer
   );
   const dispatch = useDispatch();
   const { openDetail, myId, deleteReview } = props;
@@ -36,19 +36,23 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
     id: number
   ) => {
     e.stopPropagation();
-    dispatch(clickHeartBtn(id));
+    if (localStorage.getItem("token")) {
+      dispatch(clickHeartBtn(id));
 
-    axios
-      .post(
-        `${API_URL}/reviews/like`,
-        { review: id },
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((res) => console.log(res));
+      axios
+        .post(
+          `${API_URL}/reviews/like`,
+          { review: id },
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((res) => console.log(res));
+    } else {
+      alert("로그인이 필요한 서비스입니다.");
+    }
   };
 
   return (
@@ -71,8 +75,10 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
             <Title review>{review.title}</Title>
             <Name
               onClick={() => {
-                props.history.push(`/user/${review.user_info.id}`);
+                myId === undefined &&
+                  props.history.push(`/user/${review.user_info.id}`);
               }}
+              underline={myId === undefined}
             >
               {review.user_info.nickname}
             </Name>
@@ -101,7 +107,19 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
               mode="default"
               onClick={(e) => recommendReview(e, review.id)}
             >
-              {reviewIds.includes(review.id) ? (
+              {review.is_like ? (
+                reviewIds.includes(review.id) ? (
+                  <>
+                    <HiOutlineHeart size="18" />
+                    {review.recommend_count - 1}
+                  </>
+                ) : (
+                  <>
+                    <HiHeart size="18" color="#d3492a" />
+                    {review.recommend_count}
+                  </>
+                )
+              ) : reviewIds.includes(review.id) ? (
                 <>
                   <HiHeart size="18" color="#d3492a" />
                   {review.recommend_count + 1}
@@ -158,7 +176,7 @@ const BookInfo = styled.div`
   img {
     display: block;
     position: relative;
-    top: -30px;
+    top: -25px;
     height: 130px;
     box-shadow: rgba(0, 0, 0, 0.25) 8px 8px 8px -2px;
   }

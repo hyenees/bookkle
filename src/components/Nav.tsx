@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import AccountModal from "pages/Account/AccountModal";
-import SearchModal from "pages/SearchModal";
+import AccountModal from "pages/Main/Account/AccountModal";
+import SearchModal from "components/SearchModal";
 import logo from "images/logo.png";
 import { MdAccountCircle } from "react-icons/md";
 import { BiBookAdd } from "react-icons/bi";
-import { Buttons } from "widget/SmallButton";
+import { Buttons, CircleButton } from "widget/SmallButton";
 
 const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
   const [isOpenAccount, setIsOpenAccount] = useState<boolean>(false);
@@ -30,13 +30,17 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
             onClick={() => props.history.push("/")}
           />
           <Buttons mode="nav">
-            <Icon>
-              <BiBookAdd
-                className="post"
-                size="26"
-                color="#4a4a4a"
-                onClick={() => setIsOpenSearch(true)}
-              />
+            <Icon onClick={() => setIsOpenSearch(true)}>
+              <BiBookAdd className="post" size="26" />
+            </Icon>
+            <Icon
+              onClick={() =>
+                localStorage.getItem("token")
+                  ? props.history.push("/following")
+                  : alert("로그인이 필요한 서비스입니다.")
+              }
+            >
+              <div>Follow</div>
             </Icon>
             <Icon>
               {localStorage.getItem("token") ? (
@@ -45,13 +49,12 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
                     props.history.push(`/user/${localStorage.getItem("myId")}`)
                   }
                 >
-                  Hello
+                  My
                 </div>
               ) : (
                 <MdAccountCircle
                   className="accout-icon"
                   size="26"
-                  color="#4a4a4a"
                   onClick={() => {
                     setIsOpenAccount(true);
                   }}
@@ -100,9 +103,19 @@ const NavBox = styled.div`
 
 const Icon = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
-  padding: 0 10px;
+  width: 42px;
+  height: 42px;
+  margin: 0 14px;
   cursor: pointer;
+  color: #4a4a4a;
+
+  &:hover {
+    border-radius: 50%;
+    background: rgba(211, 73, 41, 0.1);
+    color: #333;
+  }
 
   div {
     font-family: "IBMPlexSansKR-Text";

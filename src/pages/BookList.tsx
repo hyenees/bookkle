@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { RouteComponentProps } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "redux/reducers";
+import { RootState } from "reducers";
 import axios from "axios";
 import Nav from "components/Nav";
-import { fetchBookList, selectBook } from "redux/actions";
+import { fetchBookList, selectBook } from "actions";
 import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import Name from "widget/Name";
@@ -49,11 +49,18 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
               right={(idx + 1) % 4 === 0}
               onClick={() => {
                 if (localStorage.getItem("token")) {
-                  props.history.push("/posting");
+                  props.history.push(`/posting/${book.isbn}`);
                 } else {
                   alert("로그인이 필요한 서비스입니다.");
                 }
-                dispatch(selectBook(book.title, book.authors, book.thumbnail));
+                dispatch(
+                  selectBook(
+                    book.title,
+                    book.authors,
+                    book.thumbnail,
+                    book.isbn
+                  )
+                );
               }}
             >
               <BookImgBox bookList logo={book.thumbnail === ""}>
