@@ -3,6 +3,8 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { BsSearch } from "react-icons/bs";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { ModalLayout } from "widget/Modal";
+import { CircleButton } from "widget/SmallButton";
 
 interface SearchModalProps extends RouteComponentProps<any, any, any> {
   closeSearch: () => void;
@@ -22,20 +24,23 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
             size="26"
             className="close-icon"
           />
+
           <SearchInput
-            placeholder="책을 검색해주세요."
+            placeholder="리뷰하고 싶은 책 제목을 입력하세요."
             onChange={(e) => setSearchBook(e.target.value)}
           />
-          <BsSearch
-            className="search-icon"
-            size="20"
+          <CircleButton
+            mode="default"
+            search
             onClick={() => {
               props.history.push(`/booklist/${searchBook}`, {
                 searchBook: searchBook,
               });
               closeSearch();
             }}
-          />
+          >
+            <BsSearch size="20" />
+          </CircleButton>
         </ModalBox>
       </ModalLayout>
     </>
@@ -43,17 +48,6 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
 };
 
 export default withRouter(SearchModal);
-
-const ModalLayout = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 150;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-`;
 
 const slideToBottom = keyframes`
    0%{
@@ -67,22 +61,14 @@ const slideToBottom = keyframes`
 const ModalBox = styled.div`
   position: fixed;
   width: 100%;
-  padding: 30px 80px 30px 160px;
+  padding: 30px 160px 30px 200px;
   background: #fff;
   animation: ${slideToBottom} 0.3s ease forwards;
-
-  .search-icon {
-    position: absolute;
-    top: 50%;
-    right: 90px;
-    transform: translateY(-50%);
-    cursor: pointer;
-  }
 
   .close-icon {
     position: absolute;
     top: 50%;
-    left: 90px;
+    left: 120px;
     transform: translateY(-50%);
     color: #d3492a;
     cursor: pointer;

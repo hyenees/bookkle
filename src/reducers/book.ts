@@ -25,6 +25,7 @@ const BookReducer = (
           title: action.title,
           authors: action.authors,
           thumbnail: action.thumbnail,
+          isbn: action.isbn,
         },
       };
     default:

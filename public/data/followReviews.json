@@ -1,0 +1,45 @@
+{
+  "count": 15,
+  "next": "http://localhost:8000/reviews/following?limit=8&offset=8",
+  "previous": null,
+  "results": [
+    {
+      "id": 21,
+      "title": "Reflect when parent place morning improve truth.",
+      "content": "Fund wide benefit best machine eight. Remain item table. Myself out husband law. People talk hair attention.\nTen glass both perhaps during experience agency. Actually challenge answer message night. Action candidate sort cold interview well. Dog local seat skin.\nEat cost listen girl brother fine. Stuff break small game skin ground. Cover tonight consumer generation stand fact relationship.\nReflect keep notice bank parent. Necessary magazine store main able system series. Office question tree ten.\nSeries example player year tend word. Window grow movement international. Democrat product skill ask.\nHelp else ability total. Choice law realize five describe forward. Method control blood very.",
+      "rating": 2,
+      "quote": "Issue explain wrong data cultural. Teacher brother check. Event every tree.",
+      "recommend_count": 11,
+      "book_detail": {
+        "id": 13,
+        "title": "미움받을 용기",
+        "author": "기시미 이치로",
+        "image": "https://image.yes24.com/momo/TopCate1261/MidCate008/126075397.jpg"
+      },
+      "user_info": {
+        "id": 4,
+        "nickname": "반랄랄"
+      },
+      "is_like": true
+    },
+    {
+      "id": 8,
+      "title": "Training audience contain reduce.",
+      "content": "Partner tough add sometimes official bed. Adult else future might travel change vote.\nTeam wish student food think. Add production choose various chance. Growth leave smile probably above soon sense.\nTwo force low become executive task anything always. Republican value eight star car table. Power trial the sure.\nOpen identify quickly hit describe. Treatment step per leave hand customer.\nAmong campaign sport agreement back add. Thing record change two method when.\nCareer keep follow address. Market or loss them watch green rock. Major fear great pick front front analysis serve.\nSave activity guess probably authority product voice. Develop over season senior good.\nHair moment method material include manage food base. Financial successful issue. Market need financial consider.",
+      "rating": 1,
+      "quote": "Add woman let people same. Resource herself on fact.",
+      "recommend_count": 19,
+      "book_detail": {
+        "id": 17,
+        "title": "우아한 방어",
+        "author": "에이비",
+        "image": "http://image.yes24.com/goods/90263505/800x0"
+      },
+      "user_info": {
+        "id": 3,
+        "nickname": "혠짱"
+      },
+      "is_like": false
+    }
+  ]
+}

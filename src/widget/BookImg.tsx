@@ -3,11 +3,12 @@ import styled from "styled-components";
 interface LogoImgStyle {
   logo?: boolean;
   bookList?: boolean;
+  review?: boolean;
 }
 
 export const BookImgBox = styled.div<LogoImgStyle>`
-  width: 120px;
-  height: 174px;
+  width: ${(props) => (props.review ? "88.95px" : "120px")};
+  height: ${(props) => (props.review ? "130px" : "174px")};
   margin: ${(props) => props.bookList && "0 auto 30px"};
   border: ${(props) => props.logo && "1px solid #f4f4f4"};
   ${(props) =>

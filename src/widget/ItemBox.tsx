@@ -18,11 +18,6 @@ const ItemBox = styled.div<ItemBoxStyle>`
 `}
   cursor : pointer;
 
-  .buttons {
-    display: flex;
-    margin: 30px 0 10px;
-  }
-
   .book-info {
     text-align: center;
   }

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import AccountModal from "pages/Account/AccountModal";
-import SearchModal from "pages/SearchModal";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import api from "api";
+import AccountModal from "pages/Main/Account/AccountModal";
+import SearchModal from "components/SearchModal";
 import logo from "images/logo.png";
 import { MdAccountCircle } from "react-icons/md";
 import { BiBookAdd } from "react-icons/bi";
+import { Buttons, CircleButton } from "widget/SmallButton";
 
-const Nav: React.FunctionComponent = (props) => {
+const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
   const [isOpenAccount, setIsOpenAccount] = useState<boolean>(false);
   const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
@@ -18,29 +21,58 @@ const Nav: React.FunctionComponent = (props) => {
     setIsOpenAccount(false);
   };
 
+  const logout = async () => {
+    const res = await api.signOut();
+    console.log(res);
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
     <>
       <NavLayout>
         <NavBox>
-          <img src={logo} alt="bookkle" />
-          <Icons>
-            <Icon>
-              <BiBookAdd
-                className="post"
-                size="26"
-                onClick={() => setIsOpenSearch(true)}
-              />
+          <img
+            src={logo}
+            alt="bookkle"
+            onClick={() => props.history.push("/")}
+          />
+          <Buttons mode="nav">
+            <Icon onClick={() => setIsOpenSearch(true)}>
+              <BiBookAdd className="post" size="26" />
+            </Icon>
+            <Icon
+              onClick={() =>
+                localStorage.getItem("myId")
+                  ? props.history.push("/following")
+                  : alert("로그인이 필요한 서비스입니다.")
+              }
+            >
+              <div>Follow</div>
             </Icon>
             <Icon>
-              <MdAccountCircle
-                className="accout-icon"
-                size="26"
-                onClick={() => {
-                  setIsOpenAccount(true);
-                }}
-              />
+              {localStorage.getItem("myId") ? (
+                <div
+                  onClick={() =>
+                    props.history.push(`/user/${localStorage.getItem("myId")}`)
+                  }
+                >
+                  My
+                </div>
+              ) : (
+                <MdAccountCircle
+                  className="accout-icon"
+                  size="26"
+                  onClick={() => {
+                    setIsOpenAccount(true);
+                  }}
+                />
+              )}
             </Icon>
-          </Icons>
+            {localStorage.getItem("myId") && (
+              <Icon onClick={logout}>Logout</Icon>
+            )}
+          </Buttons>
         </NavBox>
       </NavLayout>
       {isOpenAccount && <AccountModal closeAccount={closeAccount} />}
@@ -49,7 +81,7 @@ const Nav: React.FunctionComponent = (props) => {
   );
 };
 
-export default Nav;
+export default withRouter(Nav);
 
 const NavLayout = styled.nav`
   position: fixed;
@@ -69,6 +101,7 @@ const NavBox = styled.div`
   img {
     max-height: 44px;
     width: auto;
+    cursor: pointer;
   }
   @media (min-width: 1200px) {
     width: 1170px;
@@ -79,16 +112,23 @@ const NavBox = styled.div`
   }
 `;
 
-const Icons = styled.div`
-  display: flex;
-  margin-right: -10px;
-
-  * {
-    color: #4a4a4a;
-  }
-`;
-
 const Icon = styled.div`
-  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0 14px;
   cursor: pointer;
+  color: #4a4a4a;
+
+  &:hover {
+    border-radius: 50%;
+    background: rgba(211, 73, 41, 0.1);
+    color: #333;
+  }
+
+  div {
+    font-family: "IBMPlexSansKR-Text";
+  }
 `;
