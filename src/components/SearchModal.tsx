@@ -19,28 +19,28 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
       {console.log(searchBook)}
       <ModalLayout onClick={closeSearch}>
         <ModalBox onClick={(e) => e.stopPropagation()}>
-          {/* <CircleButton mode="default"> */}
           <AiOutlineCloseCircle
             onClick={closeSearch}
             size="26"
             className="close-icon"
           />
-          {/* </CircleButton> */}
 
           <SearchInput
             placeholder="리뷰하고 싶은 책 제목을 입력하세요."
             onChange={(e) => setSearchBook(e.target.value)}
           />
-          <BsSearch
-            className="search-icon"
-            size="20"
+          <CircleButton
+            mode="default"
+            search
             onClick={() => {
               props.history.push(`/booklist/${searchBook}`, {
                 searchBook: searchBook,
               });
               closeSearch();
             }}
-          />
+          >
+            <BsSearch size="20" />
+          </CircleButton>
         </ModalBox>
       </ModalLayout>
     </>
@@ -64,17 +64,6 @@ const ModalBox = styled.div`
   padding: 30px 160px 30px 200px;
   background: #fff;
   animation: ${slideToBottom} 0.3s ease forwards;
-
-  .search-icon {
-    position: absolute;
-    top: 50%;
-    right: 160px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    &:hover {
-      background: #ddd;
-    }
-  }
 
   .close-icon {
     position: absolute;

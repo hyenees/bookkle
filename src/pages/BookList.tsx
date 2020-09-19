@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "reducers";
 import axios from "axios";
+import api from "api";
 import Nav from "components/Nav";
 import { fetchBookList, selectBook } from "actions";
 import Layout from "widget/Layout";
@@ -22,18 +23,14 @@ interface BookListProps extends RouteComponentProps<any, any, BookListProps> {
 const BookList: React.FunctionComponent<BookListProps> = (props) => {
   const { books } = useSelector((state: RootState) => state.BookReducer);
   const dispatch = useDispatch();
-
   const { searchBook } = props.location.state;
 
   useEffect(() => {
-    axios
-      .get("https://dapi.kakao.com/v3/search/book?target=title", {
-        params: { query: searchBook, size: 50 },
-        headers: { Authorization: "KakaoAK e23535b3c49c44d77ffac09377ac9d58" },
-      })
-      .then((res) => {
-        dispatch(fetchBookList(res.data.documents));
-      });
+    const getBooks = async () => {
+      const res = await api.getBooks(searchBook);
+      dispatch(fetchBookList(res));
+    };
+    getBooks();
   }, [dispatch, searchBook]);
 
   return (
@@ -48,7 +45,7 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
               mode="bookList"
               right={(idx + 1) % 4 === 0}
               onClick={() => {
-                if (localStorage.getItem("token")) {
+                if (localStorage.getItem("myId")) {
                   props.history.push(`/posting/${book.isbn}`);
                 } else {
                   alert("로그인이 필요한 서비스입니다.");

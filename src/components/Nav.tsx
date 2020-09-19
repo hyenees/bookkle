@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import api from "api";
 import AccountModal from "pages/Main/Account/AccountModal";
 import SearchModal from "components/SearchModal";
 import logo from "images/logo.png";
@@ -20,6 +21,13 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
     setIsOpenAccount(false);
   };
 
+  const logout = async () => {
+    const res = await api.signOut();
+    console.log(res);
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
     <>
       <NavLayout>
@@ -35,7 +43,7 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
             </Icon>
             <Icon
               onClick={() =>
-                localStorage.getItem("token")
+                localStorage.getItem("myId")
                   ? props.history.push("/following")
                   : alert("로그인이 필요한 서비스입니다.")
               }
@@ -43,7 +51,7 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
               <div>Follow</div>
             </Icon>
             <Icon>
-              {localStorage.getItem("token") ? (
+              {localStorage.getItem("myId") ? (
                 <div
                   onClick={() =>
                     props.history.push(`/user/${localStorage.getItem("myId")}`)
@@ -61,6 +69,9 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
                 />
               )}
             </Icon>
+            {localStorage.getItem("myId") && (
+              <Icon onClick={logout}>Logout</Icon>
+            )}
           </Buttons>
         </NavBox>
       </NavLayout>

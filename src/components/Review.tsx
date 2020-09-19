@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "api";
 import styled from "styled-components";
 import axios from "axios";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -31,25 +32,15 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
   const dispatch = useDispatch();
   const { openDetail, myId, deleteReview } = props;
 
-  const recommendReview = (
+  const recommendReview = async (
     e: React.MouseEvent<HTMLButtonElement>,
     id: number
   ) => {
     e.stopPropagation();
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("myId")) {
       dispatch(clickHeartBtn(id));
-
-      axios
-        .post(
-          `${API_URL}/reviews/like`,
-          { review: id },
-          {
-            headers: {
-              Authorization: `Token ${localStorage.getItem("token")}`,
-            },
-          }
-        )
-        .then((res) => console.log(res));
+      const response = await api.likeReview(id);
+      console.log(response);
     } else {
       alert("로그인이 필요한 서비스입니다.");
     }
@@ -57,6 +48,7 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
 
   return (
     <>
+      {console.log(reviewIds)}
       {reviews.map((review: ReviewData, idx: number) => (
         <ItemBox
           mode="review"

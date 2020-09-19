@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 interface ButtonStyle {
   mode: "default" | "detail" | "text" | "nav";
+  search?: boolean;
 }
 
 const handleAlignType = (mode: string) => {
@@ -26,12 +27,20 @@ export const TextButton = styled.button`
 `;
 
 export const CircleButton = styled.button<ButtonStyle>`
+  ${(props) =>
+    props.search &&
+    `  position: absolute;
+    top: 50%;
+    right: 160px;
+    transform: translateY(-50%);
+  `};
   width: 40px;
   height: 40px;
   margin: ${(props) => props.mode === "detail" && "10px 0 0 0"};
   background: ${(props) => (props.mode === "detail" ? "#f4f4f4" : "#fff")};
   border-radius: 50%;
   color: #4a4a4a;
+  cursor: pointer;
   &:hover {
     background: ${(props) =>
       props.mode === "default" ? "#f4f4f4" : "rgba(211, 73, 41, 0.1)"};

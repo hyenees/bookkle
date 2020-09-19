@@ -5,12 +5,22 @@ export const ADD_REVIEW_LIST = "ADD_REVIEW_LIST";
 export const REMOVE_REVIEW = "REMOVE_REVIEW";
 export const CLICK_HEART_BTN = "CLICK_HEART_BTN";
 export const GET_PROFILE = "GET_PROFILE";
+export const GET_REVIEW = "GET_REVIEW";
+export const GET_FOLLOW_REVIEWS = "GET_FOLLOW_REVIEWS";
+export const CHECK_SIGN_IN = "CHECK_SIGN_IN";
 
 export interface Profile {
   nickname: string;
   follower_count: number;
   id: number;
   is_follow: boolean;
+}
+
+export interface BookDetail {
+  id: number;
+  title: string;
+  author: string;
+  image: string;
 }
 
 export interface ReviewData {
@@ -25,13 +35,6 @@ export interface ReviewData {
   rating: number;
   content: string;
   is_like: boolean;
-}
-
-export interface BookDetail {
-  id: number;
-  title: string;
-  author: string;
-  image: string;
 }
 
 export interface UserInfo {
@@ -49,6 +52,8 @@ export interface Book {
 export interface ReviewState {
   reviews: ReviewData[];
   reviewIds: number[];
+  reviewDetail: ReviewData | null;
+  followReviews: ReviewData[];
 }
 
 export interface BookState {
@@ -58,11 +63,21 @@ export interface BookState {
 
 export interface UserState {
   profile: Profile | null;
+  isLoggedIn: boolean;
+}
+
+export interface CheckSignInAction {
+  type: typeof CHECK_SIGN_IN;
+  payload: boolean;
+}
+export interface GetReviewAction {
+  type: typeof GET_REVIEW;
+  payload: ReviewData | null;
 }
 
 export interface GetProfileAction {
   type: typeof GET_PROFILE;
-  payload: Profile;
+  payload: Profile | null;
 }
 
 export interface ClickHeartBtnAction {
@@ -71,7 +86,7 @@ export interface ClickHeartBtnAction {
 }
 
 export interface GetReviewListAction {
-  type: typeof GET_REVIEW_LIST;
+  type: typeof GET_REVIEW_LIST | typeof GET_FOLLOW_REVIEWS;
   payload: ReviewData[];
 }
 
@@ -100,10 +115,11 @@ export interface FetchBookListAction {
 
 export type BookActionTypes = FetchBookListAction | SelectBookAction;
 
-export type UserActionTypes = GetProfileAction;
+export type UserActionTypes = GetProfileAction | CheckSignInAction;
 
 export type ReviewActionTypes =
   | GetReviewListAction
   | AddReviewListAction
   | RemoveReviewAction
-  | ClickHeartBtnAction;
+  | ClickHeartBtnAction
+  | GetReviewAction;

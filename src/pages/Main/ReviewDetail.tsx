@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import api from "api";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
 import { clickHeartBtn } from "actions";
-import { ReviewData } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -20,33 +20,28 @@ import { CircleButton } from "widget/SmallButton";
 
 interface ReviewDetailProps {
   closeDetail: () => void;
-  reviewDetail: ReviewData | null;
-  // recommendReview: (e: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 }
 
 const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
   const { reviewIds } = useSelector((state: RootState) => state.ReviewReducer);
-  const { reviewDetail, closeDetail } = props;
+  const { closeDetail } = props;
   const dispatch = useDispatch();
+  const { reviewDetail } = useSelector(
+    (state: RootState) => state.ReviewReducer
+  );
 
-  const recommendReview = (
+  const recommendReview = async (
     e: React.MouseEvent<HTMLButtonElement>,
     id: number
   ) => {
     e.stopPropagation();
-    dispatch(clickHeartBtn(id));
-
-    axios
-      .post(
-        `${API_URL}/reviews/like`,
-        { review: id },
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((res) => console.log(res));
+    if (localStorage.getItem("myId")) {
+      dispatch(clickHeartBtn(id));
+      const response = await api.likeReview(id);
+      console.log(response);
+    } else {
+      alert("로그인이 필요한 서비스입니다.");
+    }
   };
 
   return (

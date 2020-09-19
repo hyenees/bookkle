@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { API_URL } from "config";
+import api from "api";
+import { useDispatch, useSelector } from "react-redux";
+import { checkSignIn } from "actions";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { GoMail } from "react-icons/go";
 import { RiLock2Line } from "react-icons/ri";
@@ -11,6 +13,7 @@ import { AccountTitle, AccountBox } from "widget/AccountTitle";
 
 interface SignInProps extends RouteComponentProps {
   goToSignUp: () => void;
+  closeAccount: () => void;
 }
 
 interface SignInValue {
@@ -23,18 +26,16 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
 
-  const clickSignIn = () => {
-    axios
-      .post(`${API_URL}/accounts/signin`, {
-        email: signInValue.email,
-        password: signInValue.password,
-      })
-      .then((res) => {
-        console.log(res.data.token);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("myId", res.data.user_id);
-      });
+  const clickSignIn = async () => {
+    const res = await api.signIn(signInValue.email, signInValue.password);
+    console.log(res);
+    dispatch(checkSignIn(true));
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("myId", res.data.user_id);
+    props.closeAccount();
+    props.history.push("/");
   };
 
   return (

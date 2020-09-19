@@ -18,7 +18,10 @@ const AccountModal: React.FunctionComponent<AccountModalProps> = (props) => {
         {openSignUp ? (
           <SignUp />
         ) : (
-          <SignIn goToSignUp={() => setOpenSignUp(!openSignUp)} />
+          <SignIn
+            goToSignUp={() => setOpenSignUp(!openSignUp)}
+            closeAccount={props.closeAccount}
+          />
         )}
       </ModalBox>
     </ModalLayout>

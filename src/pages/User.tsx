@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
+import api from "api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "reducers";
-import { getReviewList, getProfile, removeReview } from "actions";
-import { API_URL } from "config";
+import { getProfile, getReviewList, removeReview } from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import { BsPersonPlusFill } from "react-icons/bs";
@@ -27,50 +26,27 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      // .get("http://localhost:3000/data/reviews.json")
-      .get(`${API_URL}/accounts/profile/${props.match.params.id}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((res) => {
-        console.log(res.data);
-        dispatch(getProfile(res.data));
-      });
+    (async () => {
+      const res = await api.getProfile(props.match.params.id);
+      dispatch(getProfile(res));
+    })();
   }, [dispatch, props.match.params.id]);
 
   useEffect(() => {
-    console.log("A");
-    axios
-      // .get("http://localhost:3000/data/reviews.json")
-      .get(`${API_URL}/accounts/my-reviews/${props.match.params.id}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((res) => {
-        console.log("myReview", res.data.results);
-        dispatch(getReviewList(res.data.results));
-      });
+    (async () => {
+      const res = await api.getMyReviews(props.match.params.id);
+      dispatch(getReviewList(res));
+    })();
   }, [dispatch, props.match.params.id]);
 
-  const deleteReview = (id: number) => {
-    axios
-      .delete(`${API_URL}/reviews/${id}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((res) => {
-        console.log("delete", res);
-        dispatch(removeReview(id));
-      });
+  const deleteReview = async (id: number) => {
+    const res = await api.removeReview(id);
+    dispatch(removeReview(id));
   };
 
-  const followUser = async () => {
-    const response = await axios.post(
-      `${API_URL}/accounts/follow`,
-      { follow_to: profile?.id },
-      {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      }
-    );
-    console.log(response);
+  const followUser = async (id: number | undefined) => {
+    const res = await api.followUser(id);
+    console.log("res", res);
     setIsClickedFollowBtn(!isClickedFollowBtn);
   };
 
@@ -86,7 +62,10 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
               <>
                 {profile?.nickname}
                 &nbsp;&nbsp;
-                <CircleButton mode="default" onClick={followUser}>
+                <CircleButton
+                  mode="default"
+                  onClick={() => followUser && followUser(profile?.id)}
+                >
                   {profile?.is_follow ? (
                     isClickedFollowBtn ? (
                       <BsPersonPlus size="26" />

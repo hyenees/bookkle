@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import axios from "axios";
+import api from "api";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "reducers";
@@ -45,66 +46,45 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
   const [revise, setRevise] = useState<boolean>(false);
 
   useEffect(() => {
-    if (props.match.params.id !== undefined) {
-      axios
-        .get(`${API_URL}/reviews/${props.match.params.id}`, {
-          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-        })
-        .then((res) => {
-          console.log(res);
-          setReview(res.data);
-          setRevise(true);
-        });
+    if (props.match.params.id.length < 30) {
+      (async () => {
+        const res = await api.getInputReview(props.match.params.id);
+        console.log(res);
+        setRevise(true);
+        setReview(res);
+      })();
     }
   }, [props.match.params.id]);
 
-  const postReview = () => {
-    axios
-      .post(
-        `${API_URL}/reviews`,
-        {
-          title: review.title,
-          content: review.content,
-          quote: review.quote,
-          rating: review.rating,
-          book_title: selectedBook?.title,
-          book_author: selectedBook?.authors.join(" · "),
-          book_image: selectedBook?.thumbnail,
-        },
-        { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
-      )
-      .then((res) => {
-        console.log("post", res);
-        props.history.push(`/user/${localStorage.getItem("myId")}`);
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
+  const postReview = async () => {
+    const res = await api.postReview(
+      review.title,
+      review.content,
+      review.quote,
+      review.rating,
+      selectedBook?.title,
+      selectedBook?.authors.join(" · "),
+      selectedBook?.thumbnail
+    );
+    console.log(res);
+    props.history.push(`/user/${localStorage.getItem("myId")}`);
   };
 
-  const updateReview = () => {
-    axios
-      .put(
-        `${API_URL}/reviews/${props.match.params.id}`,
-        {
-          title: review.title,
-          content: review.content,
-          quote: review.quote,
-          rating: review.rating,
-        },
-        { headers: { Authorization: `Token ${localStorage.getItem("token")}` } }
-      )
-      .then((res) => {
-        console.log(res);
-        props.history.push(`/user/${localStorage.getItem("myId")}`);
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
+  const updateReview = async () => {
+    const res = await api.updateReview(
+      props.match.params.id,
+      review.title,
+      review.content,
+      review.quote,
+      review.rating
+    );
+    console.log(res);
+    props.history.push(`/user/${localStorage.getItem("myId")}`);
   };
 
   return (
     <>
+      {console.log(props)}
       <Nav />
       <Layout>
         <PostBoard>

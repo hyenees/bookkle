@@ -16,6 +16,11 @@ import {
   Profile,
   REMOVE_REVIEW,
   RemoveReviewAction,
+  GetReviewAction,
+  GET_REVIEW,
+  GET_FOLLOW_REVIEWS,
+  CHECK_SIGN_IN,
+  CheckSignInAction,
 } from "../store/types";
 
 export const fetchBookList = (books: Book[]): FetchBookListAction => {
@@ -25,7 +30,7 @@ export const fetchBookList = (books: Book[]): FetchBookListAction => {
   };
 };
 
-export const getProfile = (profile: Profile): GetProfileAction => {
+export const getProfile = (profile: Profile | null): GetProfileAction => {
   return {
     type: GET_PROFILE,
     payload: profile,
@@ -47,6 +52,15 @@ export const selectBook = (
   };
 };
 
+export const getFollowReviews = (
+  reviews: ReviewData[]
+): GetReviewListAction => {
+  return {
+    type: GET_FOLLOW_REVIEWS,
+    payload: reviews,
+  };
+};
+
 export const getReviewList = (reviews: ReviewData[]): GetReviewListAction => {
   return {
     type: GET_REVIEW_LIST,
@@ -61,10 +75,17 @@ export const removeReview = (id: number): RemoveReviewAction => {
   };
 };
 
-export const addReviewList = (reviews: ReviewData[]): AddReviewListAction => {
+export const addReviewList = (review: ReviewData[]): AddReviewListAction => {
   return {
     type: ADD_REVIEW_LIST,
-    payload: reviews,
+    payload: review,
+  };
+};
+
+export const getReview = (review: ReviewData): GetReviewAction => {
+  return {
+    type: GET_REVIEW,
+    payload: review,
   };
 };
 
@@ -72,5 +93,12 @@ export const clickHeartBtn = (reviewIds: number): ClickHeartBtnAction => {
   return {
     type: CLICK_HEART_BTN,
     payload: reviewIds,
+  };
+};
+
+export const checkSignIn = (bool: boolean): CheckSignInAction => {
+  return {
+    type: CHECK_SIGN_IN,
+    payload: bool,
   };
 };

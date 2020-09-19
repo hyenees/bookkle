@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import api from "api";
 import { useDispatch } from "react-redux";
-import { getReviewList, addReviewList } from "actions";
+import { getReviewList, getReview, addReviewList } from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
-import { ReviewData } from "store/types";
 import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
@@ -24,49 +24,33 @@ export interface QuoteInfo {
 const LIMIT = 8;
 
 const Main: React.FunctionComponent = () => {
-  const [reviewDetail, setReviewDetail] = useState<ReviewData | null>(null);
   const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
   const [offset, setOffset] = useState<number>(8);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios.get(`${API_URL}/reviews/quote`).then((res) => {
-      console.log(res);
-      setRandomQuote(res.data);
-    });
+    axios
+      .get(`${API_URL}/reviews/quote`, { withCredentials: true })
+      .then((res) => {
+        console.log(res);
+        setRandomQuote(res.data);
+      });
   }, []);
 
   useEffect(() => {
-    axios
-      // .get("http://localhost:3000/data/reviews.json")
-      .get(
-        `${API_URL}/reviews`,
-        localStorage.getItem("token")
-          ? {
-              headers: {
-                Authorization: `Token ${localStorage.getItem("token")}`,
-              },
-            }
-          : undefined
-      )
-      .then((res) => {
-        console.log(res);
-        dispatch(getReviewList(res.data.results));
-      });
+    const fetchReviews = async () => {
+      const res = await api.getReviews();
+      dispatch(getReviewList(res));
+      console.log(res);
+    };
+    fetchReviews();
   }, [dispatch]);
 
-  const viewMoreReviews = () => {
-    axios
-      .get(`${API_URL}/reviews?limit=${LIMIT}&offset=${offset}`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        dispatch(addReviewList(res.data.results));
-      });
+  const viewMoreReviews = async (offset: number) => {
+    const res = await api.addReviews(offset);
+    dispatch(addReviewList(res));
+    console.log(res);
     setOffset(offset + LIMIT);
   };
 
@@ -74,19 +58,11 @@ const Main: React.FunctionComponent = () => {
     setIsReviewOpened(false);
   };
 
-  const openDetail = (id: number) => {
+  const openDetail = async (id: number) => {
+    const res = await api.getReviewDetail(id);
+    dispatch(getReview(res));
+    console.log(res);
     setIsReviewOpened(true);
-    axios
-      .get(`${API_URL}/reviews/${id}`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      // .get("http://localhost:3000/data/reviewDetail.json")
-      .then((res) => {
-        console.log("detail", res);
-        setReviewDetail(res.data);
-      });
   };
 
   return (
@@ -118,13 +94,11 @@ const Main: React.FunctionComponent = () => {
         <ListBoard>
           <Review openDetail={openDetail} />
         </ListBoard>
-        <Button posting onClick={viewMoreReviews}>
+        <Button posting onClick={() => viewMoreReviews(offset)}>
           더 보기
         </Button>
       </Layout>
-      {isReviewOpened && (
-        <ReviewDetail closeDetail={closeDetail} reviewDetail={reviewDetail} />
-      )}
+      {isReviewOpened && <ReviewDetail closeDetail={closeDetail} />}
     </>
   );
 };
