@@ -19,8 +19,10 @@ import {
   GetReviewAction,
   GET_REVIEW,
   GET_FOLLOW_REVIEWS,
-  CHECK_SIGN_IN,
-  CheckSignInAction,
+  CountLikeAction,
+  COUNT_LIKE,
+  GetLikeCountAction,
+  GET_LIKE_COUNT,
 } from "../store/types";
 
 export const fetchBookList = (books: Book[]): FetchBookListAction => {
@@ -96,9 +98,20 @@ export const clickHeartBtn = (reviewIds: number): ClickHeartBtnAction => {
   };
 };
 
-export const checkSignIn = (bool: boolean): CheckSignInAction => {
+export const getLikeCount = (
+  reviewId: number,
+  recommendCount: number
+): GetLikeCountAction => {
   return {
-    type: CHECK_SIGN_IN,
-    payload: bool,
+    type: GET_LIKE_COUNT,
+    id: reviewId,
+    count: recommendCount,
+  };
+};
+
+export const countLike = (reviewId: number): CountLikeAction => {
+  return {
+    type: COUNT_LIKE,
+    id: reviewId,
   };
 };

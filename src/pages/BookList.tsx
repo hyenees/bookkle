@@ -46,7 +46,7 @@ const BookList: React.FunctionComponent<BookListProps> = (props) => {
               right={(idx + 1) % 4 === 0}
               onClick={() => {
                 if (localStorage.getItem("myId")) {
-                  props.history.push(`/posting/${book.isbn}`);
+                  props.history.push(`/booklist/posting/${book.isbn}`);
                 } else {
                   alert("로그인이 필요한 서비스입니다.");
                 }

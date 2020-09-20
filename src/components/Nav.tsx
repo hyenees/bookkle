@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import api from "api";
 import AccountModal from "pages/Main/Account/AccountModal";
 import SearchModal from "components/SearchModal";
 import logo from "images/logo.png";
@@ -22,10 +21,17 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
   };
 
   const logout = async () => {
-    const res = await api.signOut();
-    console.log(res);
     localStorage.clear();
     window.location.href = "/";
+  };
+
+  const goToFollowReviews = () => {
+    if (localStorage.getItem("myId")) {
+      props.history.push("/following");
+      window.scrollTo(0, 0);
+    } else {
+      alert("로그인이 필요한 서비스입니다.");
+    }
   };
 
   return (
@@ -41,21 +47,16 @@ const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
             <Icon onClick={() => setIsOpenSearch(true)}>
               <BiBookAdd className="post" size="26" />
             </Icon>
-            <Icon
-              onClick={() =>
-                localStorage.getItem("myId")
-                  ? props.history.push("/following")
-                  : alert("로그인이 필요한 서비스입니다.")
-              }
-            >
+            <Icon onClick={goToFollowReviews}>
               <div>Follow</div>
             </Icon>
             <Icon>
               {localStorage.getItem("myId") ? (
                 <div
-                  onClick={() =>
-                    props.history.push(`/user/${localStorage.getItem("myId")}`)
-                  }
+                  onClick={() => {
+                    props.history.push(`/user/${localStorage.getItem("myId")}`);
+                    window.scrollTo(0, 0);
+                  }}
                 >
                   My
                 </div>
@@ -88,6 +89,7 @@ const NavLayout = styled.nav`
   z-index: 100;
   width: 100%;
   background: #ebe9e8;
+  box-shadow: 0 1.2px 5px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const NavBox = styled.div`
@@ -121,6 +123,10 @@ const Icon = styled.div`
   margin: 0 14px;
   cursor: pointer;
   color: #4a4a4a;
+
+  @media (min-width: 375px) and (max-width: 768px) {
+    margin: 5px;
+  }
 
   &:hover {
     border-radius: 50%;

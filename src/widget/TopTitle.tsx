@@ -45,6 +45,17 @@ const TopTitle = styled.h1<TopTitleStyle>`
     &.count {
       color: #d3492a;
     }
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: ${(props) => props.mode === "mypage" && "24px"};
+  }
+
+  @media (min-width: 375px) and (max-width: 768px) {
+    font-size: ${(props) => props.mode === "quote" && "28px"};
   }
 `;
 

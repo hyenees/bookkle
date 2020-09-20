@@ -68,10 +68,22 @@ const ModalBox = styled.div`
   .close-icon {
     position: absolute;
     top: 50%;
-    left: 120px;
+    left: 5%;
     transform: translateY(-50%);
+
     color: #d3492a;
     cursor: pointer;
+    @media (max-width: 768px) {
+      left: 2%;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1200px) {
+    padding: 30px 80px 30px 100px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 15px 40px 15px 50px;
   }
 `;
 
@@ -80,4 +92,8 @@ const SearchInput = styled.input`
   height: 60px;
   border: none;
   font-size: 24px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;

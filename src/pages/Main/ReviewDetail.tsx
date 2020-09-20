@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import api from "api";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
@@ -8,9 +7,9 @@ import { clickHeartBtn } from "actions";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
+import { AiOutlineClose } from "react-icons/ai";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
-import { API_URL } from "config";
 import { ModalLayout, ModalBox } from "widget/Modal";
 import Title from "widget/Title";
 import Name from "widget/Name";
@@ -47,6 +46,10 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
   return (
     <ModalLayout onClick={closeDetail}>
       <ModalBox onClick={(e) => e.stopPropagation()} review>
+        <CircleButton mode="default">
+          <AiOutlineClose size="20" onClick={closeDetail} />
+        </CircleButton>
+
         {reviewDetail && (
           <>
             <BookInfo>
@@ -86,13 +89,13 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
                 {reviewDetail.is_like ? (
                   reviewIds.includes(reviewDetail.id) ? (
                     <>
-                      <HiOutlineHeart size="18" />
-                      {reviewDetail.recommend_count - 1}
+                      <HiHeart size="18" color="#d3492a" />
+                      {reviewDetail.recommend_count}
                     </>
                   ) : (
                     <>
-                      <HiHeart size="18" color="#d3492a" />
-                      {reviewDetail.recommend_count}
+                      <HiOutlineHeart size="18" />
+                      {reviewDetail.recommend_count - 1}
                     </>
                   )
                 ) : reviewIds.includes(reviewDetail.id) ? (
@@ -121,7 +124,7 @@ export default ReviewDetail;
 const BookInfo = styled.div`
   display: flex;
   justify-content: center;
-  margin: 30px auto 40px;
+  margin: 10px auto 40px;
   padding-bottom: 30px;
   border-bottom: 1px solid #ddd;
 

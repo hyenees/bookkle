@@ -15,7 +15,7 @@ const Routes: React.FunctionComponent = () => {
         <Route exact path="/" component={Main} />
         <Route exact path="/booklist/:search" component={BookList} />
         <Route exact path="/user/:id" component={User} />
-        <Route exact path="/posting/book_id" component={Posting} />
+        <Route exact path="/booklist/posting/:bookId" component={Posting} />
         <Route exact path="/posting/:id" component={Posting} />
         <Route exact path="/following" component={FollowReviews} />
       </Switch>

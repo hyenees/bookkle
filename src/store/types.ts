@@ -7,7 +7,8 @@ export const CLICK_HEART_BTN = "CLICK_HEART_BTN";
 export const GET_PROFILE = "GET_PROFILE";
 export const GET_REVIEW = "GET_REVIEW";
 export const GET_FOLLOW_REVIEWS = "GET_FOLLOW_REVIEWS";
-export const CHECK_SIGN_IN = "CHECK_SIGN_IN";
+export const COUNT_LIKE = "COUNT_LIKE";
+export const GET_LIKE_COUNT = "GET_LIKE_COUNT";
 
 export interface Profile {
   nickname: string;
@@ -54,6 +55,7 @@ export interface ReviewState {
   reviewIds: number[];
   reviewDetail: ReviewData | null;
   followReviews: ReviewData[];
+  countHeart: { [key: number]: number } | null;
 }
 
 export interface BookState {
@@ -63,13 +65,8 @@ export interface BookState {
 
 export interface UserState {
   profile: Profile | null;
-  isLoggedIn: boolean;
 }
 
-export interface CheckSignInAction {
-  type: typeof CHECK_SIGN_IN;
-  payload: boolean;
-}
 export interface GetReviewAction {
   type: typeof GET_REVIEW;
   payload: ReviewData | null;
@@ -83,6 +80,17 @@ export interface GetProfileAction {
 export interface ClickHeartBtnAction {
   type: typeof CLICK_HEART_BTN;
   payload: number;
+}
+
+export interface CountLikeAction {
+  type: typeof COUNT_LIKE;
+  id: number;
+}
+
+export interface GetLikeCountAction {
+  type: typeof GET_LIKE_COUNT;
+  id: number;
+  count: number;
 }
 
 export interface GetReviewListAction {
@@ -115,11 +123,13 @@ export interface FetchBookListAction {
 
 export type BookActionTypes = FetchBookListAction | SelectBookAction;
 
-export type UserActionTypes = GetProfileAction | CheckSignInAction;
+export type UserActionTypes = GetProfileAction;
 
 export type ReviewActionTypes =
   | GetReviewListAction
   | AddReviewListAction
   | RemoveReviewAction
   | ClickHeartBtnAction
-  | GetReviewAction;
+  | GetReviewAction
+  | CountLikeAction
+  | GetLikeCountAction;

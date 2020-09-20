@@ -18,6 +18,20 @@ const ItemBox = styled.div<ItemBoxStyle>`
 `}
   cursor : pointer;
 
+  @media (min-width: 1200px) and (max-width: 1366px) {
+    width: 31.2%;
+    margin-right: 2%;
+  }
+  @media (min-width: 768px) and (max-width: 1200px) {
+    width: 48%;
+    margin-right: 2%;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin-right: 0;
+  }
+
   .book-info {
     text-align: center;
   }

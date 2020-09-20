@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import api from "api";
 import { useDispatch, useSelector } from "react-redux";
-import { checkSignIn } from "actions";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { GoMail } from "react-icons/go";
 import { RiLock2Line } from "react-icons/ri";
@@ -31,7 +29,6 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
   const clickSignIn = async () => {
     const res = await api.signIn(signInValue.email, signInValue.password);
     console.log(res);
-    dispatch(checkSignIn(true));
     localStorage.setItem("token", res.data.token);
     localStorage.setItem("myId", res.data.user_id);
     props.closeAccount();
