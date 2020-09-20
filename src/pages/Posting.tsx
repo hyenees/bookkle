@@ -82,17 +82,18 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
 
   return (
     <>
+      {console.log(props)}
       <Nav />
       <Layout>
         <PostBoard>
           <TopTitle mode="post">리뷰를 남겨주세요.</TopTitle>
-          {selectedBook !== null ? (
+          {!props.match.params.id && selectedBook !== null ? (
             <BookInfo>
               <BookImgBox>
                 <BookImg src={selectedBook?.thumbnail} alt="book-cover" />
               </BookImgBox>
               <div className="book-title">
-                <Title posting>{selectedBook.title}</Title>
+                <Title posting>{selectedBook?.title}</Title>
                 <Name posting>{selectedBook.authors.join(" · ")}</Name>
               </div>
             </BookInfo>

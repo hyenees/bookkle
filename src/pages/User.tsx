@@ -23,12 +23,17 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
 ) => {
   const { profile } = useSelector((state: RootState) => state.UserReducer);
   const [isClickedFollowBtn, setIsClickedFollowBtn] = useState<boolean>(false);
+  const [followers, setFollowers] = useState<number | undefined>();
   const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
       const res = await api.getProfile(props.match.params.id);
       dispatch(getProfile(res));
+      if (res.is_follow) {
+        setIsClickedFollowBtn(!isClickedFollowBtn);
+      }
+      setFollowers(res.follower_count);
     })();
   }, [dispatch, props.match.params.id]);
 
@@ -49,6 +54,13 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
     const res = await api.followUser(id);
     console.log("res", res);
     setIsClickedFollowBtn(!isClickedFollowBtn);
+    if (followers !== undefined) {
+      if (isClickedFollowBtn) {
+        setFollowers(followers - 1);
+      } else {
+        setFollowers(followers + 1);
+      }
+    }
   };
 
   return (
@@ -67,13 +79,7 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
                   mode="default"
                   onClick={() => followUser && followUser(profile?.id)}
                 >
-                  {profile?.is_follow ? (
-                    isClickedFollowBtn ? (
-                      <BsPersonPlus size="26" />
-                    ) : (
-                      <BsPersonPlusFill size="26" />
-                    )
-                  ) : isClickedFollowBtn ? (
+                  {isClickedFollowBtn ? (
                     <BsPersonPlusFill size="26" />
                   ) : (
                     <BsPersonPlus size="26" />
@@ -85,9 +91,9 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
           <TopTitle mode="mypage">
             <div className="followers">Followers</div>
             <div className="followers count">
-              {isClickedFollowBtn
-                ? profile && profile?.follower_count + 1
-                : profile?.follower_count}
+              {props.match.params.id === localStorage.getItem("myId")
+                ? profile?.follower_count
+                : followers}
             </div>
           </TopTitle>
         </UserInfo>
