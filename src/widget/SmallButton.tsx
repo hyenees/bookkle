@@ -31,8 +31,9 @@ export const CircleButton = styled.button<ButtonStyle>`
     props.search &&
     `  position: absolute;
     top: 50%;
-    right: 160px;
+    right: 10%;
     transform: translateY(-50%);
+
   `};
   width: 40px;
   height: 40px;

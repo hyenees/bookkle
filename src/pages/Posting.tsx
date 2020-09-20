@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import axios from "axios";
 import api from "api";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "reducers";
 import Nav from "components/Nav";
-import { API_URL } from "config";
 import { BookDetail } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
@@ -21,7 +19,7 @@ import Grade from "widget/Grade";
 import Button from "widget/Button";
 
 interface PostingProps {
-  id: string;
+  id?: string | undefined;
 }
 
 export interface InputReview {
@@ -46,7 +44,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
   const [revise, setRevise] = useState<boolean>(false);
 
   useEffect(() => {
-    if (props.match.params.id.length < 30) {
+    if (props.match.params.id !== undefined) {
       (async () => {
         const res = await api.getInputReview(props.match.params.id);
         console.log(res);
@@ -84,7 +82,6 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
 
   return (
     <>
-      {console.log(props)}
       <Nav />
       <Layout>
         <PostBoard>
@@ -95,8 +92,8 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
                 <BookImg src={selectedBook?.thumbnail} alt="book-cover" />
               </BookImgBox>
               <div className="book-title">
-                <Title>{selectedBook.title}</Title>
-                <Name>{selectedBook.authors.join(" · ")}</Name>
+                <Title posting>{selectedBook.title}</Title>
+                <Name posting>{selectedBook.authors.join(" · ")}</Name>
               </div>
             </BookInfo>
           ) : (
@@ -105,8 +102,8 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
                 <BookImg src={review.book_detail?.image} alt="book-cover" />
               </BookImgBox>
               <div className="book-title">
-                <Title>{review.book_detail?.title}</Title>
-                <Name>{review.book_detail?.author}</Name>
+                <Title posting>{review.book_detail?.title}</Title>
+                <Name posting>{review.book_detail?.author}</Name>
               </div>
             </BookInfo>
           )}
@@ -176,6 +173,10 @@ export default Posting;
 const PostBoard = styled.section`
   width: 50%;
   margin: 0 auto;
+
+  @media (max-width: 1200px) {
+    width: 70%;
+  }
 `;
 
 const PostBox = styled.div`
@@ -190,9 +191,19 @@ const BookInfo = styled.div`
   justify-content: center;
   width: 60%;
   margin: 30px auto 40px;
+
   .book-title {
     padding: 15px 0 0 15px;
     align-self: center;
+  }
+
+  @media (min-width: 768px) and (max-width: 1200px) {
+    width: 80%;
+  }
+  @media (max-width: 768px) {
+    display: block;
+    width: 80%;
+    margin: 10px auto 20px;
   }
 `;
 
@@ -202,8 +213,14 @@ const InputBox = styled.div`
 `;
 
 const Label = styled.label`
-  width: 220px;
+  width: 18%;
   font-size: 18px;
+  @media (min-width: 768px) and (max-width: 1200px) {
+    width: 20%;
+  }
+  @media (max-width: 768px) {
+    width: 35%;
+  }
 `;
 
 const TextArea = styled.textarea`

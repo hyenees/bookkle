@@ -1,7 +1,6 @@
 import fetchClient from "./instance";
 import axios, { AxiosResponse, AxiosInstance } from "axios";
 import { ReviewData, Book, Profile } from "store/types";
-import { readdirSync } from "fs";
 
 export default {
   getBooks: async (searchBook: string): Promise<Book[]> => {
@@ -17,7 +16,9 @@ export default {
   },
 
   getReviews: async (): Promise<ReviewData[]> => {
-    const res = await fetchClient.get<{ results: ReviewData[] }>("/reviews");
+    const res = await fetchClient.get<{ results: ReviewData[] }>(
+      "/reviews.json"
+    );
     return res.data.results;
   },
 
@@ -61,6 +62,7 @@ export default {
   },
 
   getFollowReviews: async () => {
+    // const res = await fetchClient.get("/followReviews.json");
     const res = await fetchClient.get("/reviews/following");
     return res.data.results;
   },
@@ -86,13 +88,13 @@ export default {
     return res;
   },
 
-  getInputReview: async (id: string) => {
+  getInputReview: async (id: string | undefined) => {
     const res = await fetchClient.get(`/reviews/${id}`);
     return res.data;
   },
 
   updateReview: async (
-    id: string,
+    id: string | undefined,
     title: string,
     content: string,
     quote: string | null,
@@ -112,10 +114,6 @@ export default {
       email,
       password,
     });
-    return res;
-  },
-  signOut: async () => {
-    const res = await fetchClient.post("/accounts/signout");
     return res;
   },
 };

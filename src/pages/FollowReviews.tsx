@@ -4,7 +4,7 @@ import styled from "styled-components";
 import api from "api";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
-import { API_URL } from "config";
+import { clickHeartBtn, getLikeCount, countLike } from "actions";
 import Nav from "components/Nav";
 import { ReviewData } from "store/types";
 import { getFollowReviews } from "actions";
@@ -23,10 +23,21 @@ import { BookImg, BookImgBox } from "widget/BookImg";
 import Grade from "widget/Grade";
 
 const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
-  const { reviewIds, followReviews } = useSelector(
+  const { reviewIds, followReviews, countHeart } = useSelector(
     (state: RootState) => state.ReviewReducer
   );
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(clickHeartBtn(0));
+    followReviews.forEach((review) => {
+      console.log("a");
+      if (review.is_like) {
+        return dispatch(clickHeartBtn(review.id));
+      }
+      dispatch(getLikeCount(review.id, review.recommend_count));
+    });
+  }, [followReviews]);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +47,18 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
     })();
   }, [dispatch]);
 
+  const recommendReview = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number
+  ) => {
+    e.stopPropagation();
+    const response = await api.likeReview(id);
+    dispatch(countLike(id));
+    dispatch(clickHeartBtn(id));
+
+    console.log(response);
+  };
+
   return (
     <>
       <Nav />
@@ -43,8 +66,8 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
         <TopTitle mode="mypage">Follow</TopTitle>
         {followReviews.length > 0 ? (
           <ListBoard following>
-            {followReviews.map((review: ReviewData) => (
-              <Following>
+            {followReviews.map((review: ReviewData, idx: number) => (
+              <Following key={idx}>
                 <div className="user">
                   <Nickname
                     onClick={() =>
@@ -55,61 +78,49 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
                   </Nickname>
                   <CircleButton
                     mode="detail"
-                    // onClick={(e) => recommendReview(e, reviewDetail.id)}
+                    onClick={(e) => recommendReview(e, review.id)}
                   >
-                    {review.is_like ? (
-                      reviewIds.includes(review.id) ? (
-                        <>
-                          <HiOutlineHeart size="18" />
-                          {review.recommend_count - 1}
-                        </>
-                      ) : (
-                        <>
-                          <HiHeart size="18" color="#d3492a" />
-                          {review.recommend_count}
-                        </>
-                      )
-                    ) : reviewIds.includes(review.id) ? (
-                      <>
-                        <HiHeart size="18" color="#d3492a" />
-                        {review.recommend_count + 1}
-                      </>
+                    {reviewIds.includes(review.id) ? (
+                      <HiHeart size="18" color="#d3492a" />
                     ) : (
-                      <>
-                        <HiOutlineHeart size="18" />
-                        {review.recommend_count}
-                      </>
+                      <HiOutlineHeart size="18" />
                     )}
+                    {countHeart && countHeart[review.id]}
                   </CircleButton>
                 </div>
-                <BookInfo>
-                  <BookImgBox bookList>
-                    <BookImg src={review.book_detail.image} alt="book-cover" />
-                  </BookImgBox>
-                  <div className="book-info">
-                    <Title>{review.book_detail.title}</Title>
-                    <Name>{review.book_detail.author}</Name>
-                    <Grade follow>
-                      <CgSmile
-                        size="30"
-                        className={review.rating === 1 ? "select" : ""}
+                <div className="review-contents">
+                  <BookInfo>
+                    <BookImgBox bookList>
+                      <BookImg
+                        src={review.book_detail.image}
+                        alt="book-cover"
                       />
-                      <CgSmileNone
-                        size="30"
-                        className={review.rating === 2 ? "select" : ""}
-                      />
-                      <CgSmileSad
-                        size="30"
-                        className={review.rating === 3 ? "select" : ""}
-                      />
-                    </Grade>
-                  </div>
-                </BookInfo>
-                <ReviewContent>
-                  <Title review>{review.title}</Title>
-                  <div className="contents">{review.content}</div>
-                  <Quote>{review.quote}</Quote>
-                </ReviewContent>
+                    </BookImgBox>
+                    <div className="book-info">
+                      <Title follow>{review.book_detail.title}</Title>
+                      <Name follow>{review.book_detail.author}</Name>
+                      <Grade follow>
+                        <CgSmile
+                          size="30"
+                          className={review.rating === 1 ? "select" : ""}
+                        />
+                        <CgSmileNone
+                          size="30"
+                          className={review.rating === 2 ? "select" : ""}
+                        />
+                        <CgSmileSad
+                          size="30"
+                          className={review.rating === 3 ? "select" : ""}
+                        />
+                      </Grade>
+                    </div>
+                  </BookInfo>
+                  <ReviewContent>
+                    <Title review>{review.title}</Title>
+                    <Contents>{review.content}</Contents>
+                    <Quote>{review.quote}</Quote>
+                  </ReviewContent>
+                </div>
               </Following>
             ))}
           </ListBoard>
@@ -126,13 +137,19 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
 export default FollowReviews;
 
 const BookInfo = styled.div`
-  flex: 2;
+  flex: 1;
   margin-right: 40px;
   align-self: center;
+
   .book-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-bottom: 20px;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0 auto;
   }
 `;
 
@@ -143,23 +160,35 @@ const Following = styled.div`
   padding: 50px 24px;
   border-bottom: 1px solid #ddd;
 
+  .review-contents {
+    display: flex;
+    flex: 14;
+
+    @media (max-width: 768px) {
+      display: block;
+      flex: 11;
+    }
+  }
+
   .user {
-    flex: 1.3;
+    flex: 1;
+    padding-bottom: 10px;
   }
 `;
 
 const ReviewContent = styled.div`
-  flex: 10;
+  flex: 5;
+  align-self: center;
   letter-spacing: 0.3px;
   text-align: center;
+`;
 
-  .contents {
-    height: 60%;
-    margin-top: 18px;
-    text-align: left;
-    font-family: "IBMPlexSansKR-Light";
-    white-space: pre-line;
-  }
+const Contents = styled.div`
+  height: auto;
+  margin-top: 18px;
+  text-align: justify;
+  font-family: "IBMPlexSansKR-Light";
+  white-space: pre-line;
 `;
 
 const Nickname = styled.h1`
@@ -175,30 +204,12 @@ const Quote = styled.blockquote`
   position: relative;
   margin-top: 20px;
   padding: 20px;
-  /* quotes: "“" "”" "‘" "’"; */
   font-size: 16px;
   font-family: "RIDIBatang";
   word-break: keep-all;
   text-align: center;
   background: #f4f4f4;
   border-radius: 5px;
-
-  &::before {
-    content: open-quote;
-    position: absolute;
-    top: 6%;
-    left: 0;
-    font-size: 2em;
-  }
-
-  &::after {
-    content: close-quote;
-    position: absolute;
-    top: 6%;
-    right: 0;
-
-    font-size: 2em;
-  }
 `;
 
 const EmptyMsg = styled.div`

@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import api from "api";
-import { useDispatch } from "react-redux";
-import { getReviewList, getReview, addReviewList } from "actions";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "reducers";
+import {
+  getReviewList,
+  getReview,
+  addReviewList,
+  clickHeartBtn,
+} from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
@@ -28,6 +34,9 @@ const Main: React.FunctionComponent = () => {
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
   const [offset, setOffset] = useState<number>(8);
   const dispatch = useDispatch();
+  const { reviews, reviewIds } = useSelector(
+    (state: RootState) => state.ReviewReducer
+  );
 
   useEffect(() => {
     axios
@@ -116,6 +125,11 @@ const SentenceBox = styled.div`
   .quote-info {
     text-align: center;
     padding-bottom: 20px;
+  }
+
+  @media (max-width: 768px) {
+    width: 80%;
+    margin: 10px auto;
   }
 `;
 

@@ -8,6 +8,8 @@ import {
   CLICK_HEART_BTN,
   GET_FOLLOW_REVIEWS,
   GET_REVIEW,
+  COUNT_LIKE,
+  GET_LIKE_COUNT,
 } from "../store/types";
 
 const initialState: ReviewState = {
@@ -15,6 +17,7 @@ const initialState: ReviewState = {
   reviewIds: [],
   reviewDetail: null,
   followReviews: [],
+  countHeart: null,
 };
 
 const ReviewReducer = (
@@ -40,12 +43,38 @@ const ReviewReducer = (
         reviewDetail: action.payload,
       };
     case CLICK_HEART_BTN:
+      if (action.payload === 0) {
+        return { ...state, reviewIds: [] };
+      }
       return {
         ...state,
         reviewIds: state.reviewIds.includes(action.payload)
           ? state.reviewIds.filter((id: number) => id !== action.payload)
           : [...state.reviewIds, action.payload],
       };
+    case GET_LIKE_COUNT:
+      const obj = Object.assign({}, state.countHeart, {
+        [action.id]: action.count,
+      });
+      return Object.assign({}, state, {
+        countHeart: obj,
+      });
+    case COUNT_LIKE:
+      if (state.reviewIds.includes(action.id)) {
+        const obj = Object.assign({}, state.countHeart, {
+          [action.id]: state.countHeart && state.countHeart[action.id] - 1,
+        });
+        return Object.assign({}, state, {
+          countHeart: obj,
+        });
+      } else {
+        const obj = Object.assign({}, state.countHeart, {
+          [action.id]: state.countHeart && state.countHeart[action.id] + 1,
+        });
+        return Object.assign({}, state, {
+          countHeart: obj,
+        });
+      }
     case GET_FOLLOW_REVIEWS:
       return {
         ...state,

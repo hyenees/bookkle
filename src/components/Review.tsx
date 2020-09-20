@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import api from "api";
 import styled from "styled-components";
-import axios from "axios";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
-import { clickHeartBtn } from "actions";
+import { clickHeartBtn, countLike, getLikeCount } from "actions";
 import { ReviewData } from "store/types";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
-import { API_URL } from "config";
 import Name from "widget/Name";
 import ItemBox from "widget/ItemBox";
 import Title from "widget/Title";
@@ -26,11 +24,22 @@ interface ReviewProps extends RouteComponentProps {
 }
 
 const Review: React.FunctionComponent<ReviewProps> = (props) => {
-  const { reviews, reviewIds } = useSelector(
+  const { reviews, reviewIds, countHeart } = useSelector(
     (state: RootState) => state.ReviewReducer
   );
   const dispatch = useDispatch();
   const { openDetail, myId, deleteReview } = props;
+
+  useEffect(() => {
+    dispatch(clickHeartBtn(0));
+    reviews.forEach((review) => {
+      console.log("a");
+      if (review.is_like) {
+        dispatch(clickHeartBtn(review.id));
+      }
+      dispatch(getLikeCount(review.id, review.recommend_count));
+    });
+  }, [reviews]);
 
   const recommendReview = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -38,9 +47,10 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
   ) => {
     e.stopPropagation();
     if (localStorage.getItem("myId")) {
-      dispatch(clickHeartBtn(id));
       const response = await api.likeReview(id);
-      console.log(response);
+      console.log(response.data.message);
+      dispatch(countLike(id));
+      dispatch(clickHeartBtn(id));
     } else {
       alert("로그인이 필요한 서비스입니다.");
     }
@@ -69,6 +79,7 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
               onClick={() => {
                 myId === undefined &&
                   props.history.push(`/user/${review.user_info.id}`);
+                window.scrollTo(0, 0);
               }}
               underline={myId === undefined}
             >
@@ -99,29 +110,12 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
               mode="default"
               onClick={(e) => recommendReview(e, review.id)}
             >
-              {review.is_like ? (
-                reviewIds.includes(review.id) ? (
-                  <>
-                    <HiOutlineHeart size="18" />
-                    {review.recommend_count - 1}
-                  </>
-                ) : (
-                  <>
-                    <HiHeart size="18" color="#d3492a" />
-                    {review.recommend_count}
-                  </>
-                )
-              ) : reviewIds.includes(review.id) ? (
-                <>
-                  <HiHeart size="18" color="#d3492a" />
-                  {review.recommend_count + 1}
-                </>
+              {reviewIds.includes(review.id) ? (
+                <HiHeart size="18" color="#d3492a" />
               ) : (
-                <>
-                  <HiOutlineHeart size="18" />
-                  {review.recommend_count}
-                </>
+                <HiOutlineHeart size="18" />
               )}
+              {countHeart && countHeart[review.id]}
             </CircleButton>
             {localStorage.getItem("myId") === myId && (
               <Buttons mode="detail">
@@ -158,6 +152,10 @@ const ReviewContent = styled.div`
     text-align: left;
     font-family: "IBMPlexSansKR-Light";
     white-space: pre-line;
+
+    @media (max-width: 375px) {
+      font-size: 14px;
+    }
   }
 `;
 

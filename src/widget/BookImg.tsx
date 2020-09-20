@@ -18,6 +18,10 @@ export const BookImgBox = styled.div<LogoImgStyle>`
     justify-content : center;
     align-items: center;.
     `}
+
+  @media (max-width: 768px) {
+    margin: 0 auto;
+  }
 `;
 
 export const BookImg = styled.img<LogoImgStyle>`
