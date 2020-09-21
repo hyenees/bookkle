@@ -14,6 +14,15 @@ const Button = styled.button<ButtonStyle>`
   color: ${(props) => (props.isActive ? "#ebe9e8" : "#d3492a")};
   border-radius: 25px;
   font-weight: 700;
+
+  &:hover {
+    ${(props) =>
+      props.posting &&
+      `
+    background :#e8e5e3;
+  
+  `}
+  }
 `;
 
 export default Button;

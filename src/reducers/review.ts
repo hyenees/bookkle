@@ -1,7 +1,6 @@
 import {
   ReviewActionTypes,
   ReviewState,
-  ReviewData,
   REMOVE_REVIEW,
   ADD_REVIEW_LIST,
   GET_REVIEW_LIST,
@@ -80,6 +79,7 @@ const ReviewReducer = (
         ...state,
         followReviews: action.payload,
       };
+
     default:
       return state;
   }

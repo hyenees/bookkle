@@ -17,6 +17,7 @@ import { BookImg, BookImgBox } from "widget/BookImg";
 import Name from "widget/Name";
 import Grade from "widget/Grade";
 import Button from "widget/Button";
+import BookInfo from "widget/BookInfo";
 
 interface PostingProps {
   id?: string | undefined;
@@ -47,7 +48,6 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
     if (props.match.params.id !== undefined) {
       (async () => {
         const res = await api.getInputReview(props.match.params.id);
-        console.log(res);
         setRevise(true);
         setReview(res);
       })();
@@ -55,7 +55,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
   }, [props.match.params.id]);
 
   const postReview = async () => {
-    const res = await api.postReview(
+    await api.postReview(
       review.title,
       review.content,
       review.quote,
@@ -64,31 +64,28 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
       selectedBook?.authors.join(" · "),
       selectedBook?.thumbnail
     );
-    console.log(res);
     props.history.push(`/user/${localStorage.getItem("myId")}`);
   };
 
   const updateReview = async () => {
-    const res = await api.updateReview(
+    await api.updateReview(
       props.match.params.id,
       review.title,
       review.content,
       review.quote,
       review.rating
     );
-    console.log(res);
     props.history.push(`/user/${localStorage.getItem("myId")}`);
   };
 
   return (
     <>
-      {console.log(props)}
       <Nav />
       <Layout>
         <PostBoard>
           <TopTitle mode="post">리뷰를 남겨주세요.</TopTitle>
           {!props.match.params.id && selectedBook !== null ? (
-            <BookInfo>
+            <BookInfo posting>
               <BookImgBox>
                 <BookImg src={selectedBook?.thumbnail} alt="book-cover" />
               </BookImgBox>
@@ -98,7 +95,7 @@ const Posting: React.FunctionComponent<RouteComponentProps<PostingProps>> = (
               </div>
             </BookInfo>
           ) : (
-            <BookInfo>
+            <BookInfo posting>
               <BookImgBox>
                 <BookImg src={review.book_detail?.image} alt="book-cover" />
               </BookImgBox>
@@ -185,27 +182,6 @@ const PostBox = styled.div`
   padding: 40px 0 40px;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
-`;
-
-const BookInfo = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 60%;
-  margin: 30px auto 40px;
-
-  .book-title {
-    padding: 15px 0 0 15px;
-    align-self: center;
-  }
-
-  @media (min-width: 768px) and (max-width: 1200px) {
-    width: 80%;
-  }
-  @media (max-width: 768px) {
-    display: block;
-    width: 80%;
-    margin: 10px auto 20px;
-  }
 `;
 
 const InputBox = styled.div`

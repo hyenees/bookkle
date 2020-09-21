@@ -12,11 +12,10 @@ interface SearchModalProps extends RouteComponentProps<any, any, any> {
 
 const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
   const [searchBook, setSearchBook] = useState<string>("");
-
   const { closeSearch } = props;
+
   return (
     <>
-      {console.log(searchBook)}
       <ModalLayout onClick={closeSearch}>
         <ModalBox onClick={(e) => e.stopPropagation()}>
           <AiOutlineCloseCircle
@@ -70,9 +69,9 @@ const ModalBox = styled.div`
     top: 50%;
     left: 5%;
     transform: translateY(-50%);
-
     color: #d3492a;
     cursor: pointer;
+
     @media (max-width: 768px) {
       left: 2%;
     }

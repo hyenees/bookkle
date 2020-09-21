@@ -23,6 +23,8 @@ import {
   COUNT_LIKE,
   GetLikeCountAction,
   GET_LIKE_COUNT,
+  COUNT_FOLLOWER,
+  CountFollowAction,
 } from "../store/types";
 
 export const fetchBookList = (books: Book[]): FetchBookListAction => {
@@ -113,5 +115,11 @@ export const countLike = (reviewId: number): CountLikeAction => {
   return {
     type: COUNT_LIKE,
     id: reviewId,
+  };
+};
+
+export const countFollower = (): CountFollowAction => {
+  return {
+    type: COUNT_FOLLOWER,
   };
 };

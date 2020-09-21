@@ -9,6 +9,7 @@ export const GET_REVIEW = "GET_REVIEW";
 export const GET_FOLLOW_REVIEWS = "GET_FOLLOW_REVIEWS";
 export const COUNT_LIKE = "COUNT_LIKE";
 export const GET_LIKE_COUNT = "GET_LIKE_COUNT";
+export const COUNT_FOLLOWER = "COUNT_FOLLOWER";
 
 export interface Profile {
   nickname: string;
@@ -67,6 +68,10 @@ export interface UserState {
   profile: Profile | null;
 }
 
+export interface CountFollowAction {
+  type: typeof COUNT_FOLLOWER;
+}
+
 export interface GetReviewAction {
   type: typeof GET_REVIEW;
   payload: ReviewData | null;
@@ -123,7 +128,7 @@ export interface FetchBookListAction {
 
 export type BookActionTypes = FetchBookListAction | SelectBookAction;
 
-export type UserActionTypes = GetProfileAction;
+export type UserActionTypes = GetProfileAction | CountFollowAction;
 
 export type ReviewActionTypes =
   | GetReviewListAction

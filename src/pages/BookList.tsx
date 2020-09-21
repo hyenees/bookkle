@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
 import { RouteComponentProps } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "reducers";
-import axios from "axios";
 import api from "api";
 import Nav from "components/Nav";
 import { fetchBookList, selectBook } from "actions";

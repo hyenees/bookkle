@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
-import { API_URL } from "config";
+import api from "api";
+import InputBox from "widget/InputBox";
 import Input from "widget/Input";
 import Button from "widget/Button";
 import { AccountTitle, AccountBox } from "widget/AccountTitle";
@@ -10,7 +10,6 @@ interface SignUpValue {
   nickname: string;
   email: string;
   password: string;
-  pwCheck: string;
 }
 
 interface ErrMessage {
@@ -25,7 +24,6 @@ const SignUp: React.FunctionComponent = (props) => {
     nickname: "",
     email: "",
     password: "",
-    pwCheck: "",
   });
   const [errMsg, setErrMsg] = useState<ErrMessage | null>(null);
   const [isBtnClicked, setIsBtnClicked] = useState<boolean>(false);
@@ -36,17 +34,31 @@ const SignUp: React.FunctionComponent = (props) => {
       signUpValue.email.includes("@" && ".") &&
       signUpValue.nickname.length > 0
     ) {
-      axios
-        .post(`${API_URL}/accounts/signup`, {
-          email: signUpValue.email,
-          nickname: signUpValue.nickname,
-          password: signUpValue.password,
-        })
-        .then((res) => console.log(res))
-        .catch((err) => {
-          console.log(err.response);
+      // axios
+      //   .post(`${API_URL}/accounts/signup`, {
+      //     email: signUpValue.email,
+      //     nickname: signUpValue.nickname,
+      //     password: signUpValue.password,
+      //   })
+      //   .then((res) => console.log(res))
+      //   .catch((err) => {
+      //     console.log(err.response);
+      //     setErrMsg(err.response.data);
+      //   });
+      // setIsBtnClicked(true);
+      (async () => {
+        try {
+          const res = await api.signUp(
+            signUpValue.email,
+            signUpValue.nickname,
+            signUpValue.password
+          );
+          console.log(res);
+        } catch (err) {
+          console.log(err);
           setErrMsg(err.response.data);
-        });
+        }
+      })();
       setIsBtnClicked(true);
     }
   };
@@ -57,9 +69,7 @@ const SignUp: React.FunctionComponent = (props) => {
         <Notification>인증메일이 발송되었습니다.</Notification>
       ) : (
         <>
-          {console.log(errMsg)}
           <AccountTitle>회원가입</AccountTitle>
-
           <AccountBox>
             <InputBox>
               <Input
@@ -119,24 +129,6 @@ const SignUp: React.FunctionComponent = (props) => {
 };
 
 export default SignUp;
-
-const InputBox = styled.div`
-  position: relative;
-
-  .mail-icon {
-    position: absolute;
-    top: 50%;
-    right: 5%;
-    color: #727272;
-  }
-
-  .lock-icon {
-    position: absolute;
-    top: 50%;
-    right: 5%;
-    color: #727272;
-  }
-`;
 
 const Notification = styled.div`
   display: flex;

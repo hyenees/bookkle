@@ -17,6 +17,10 @@ const ListBoard = styled.section<ListBoardStyle>`
   @media (min-width: 768px) and (max-width: 1200px) {
     width: ${(props) => props.following && "70%"};
   }
+
+  @media (max-width: 768px) {
+    width: ${(props) => props.following && "80%"};
+  }
 `;
 
 export default ListBoard;

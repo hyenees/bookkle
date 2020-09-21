@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import api from "api";
-import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { GoMail } from "react-icons/go";
 import { RiLock2Line } from "react-icons/ri";
+import InputBox from "widget/InputBox";
 import Input from "widget/Input";
 import Button from "widget/Button";
 import { AccountTitle, AccountBox } from "widget/AccountTitle";
@@ -24,11 +23,12 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
     email: "",
     password: "",
   });
-  const dispatch = useDispatch();
 
   const clickSignIn = async () => {
     const res = await api.signIn(signInValue.email, signInValue.password);
-    console.log(res);
+    if (res.status === 400) {
+      alert("이메일과 비밀번호를 확인해주세요.");
+    }
     localStorage.setItem("token", res.data.token);
     localStorage.setItem("myId", res.data.user_id);
     props.closeAccount();
@@ -37,7 +37,6 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
 
   return (
     <>
-      {console.log(signInValue)}
       <AccountTitle>로그인</AccountTitle>
       <AccountBox>
         <InputBox>
@@ -74,21 +73,3 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
 };
 
 export default withRouter(SignIn);
-
-const InputBox = styled.div`
-  position: relative;
-
-  .mail-icon {
-    position: absolute;
-    top: 50%;
-    right: 5%;
-    color: #727272;
-  }
-
-  .lock-icon {
-    position: absolute;
-    top: 50%;
-    right: 5%;
-    color: #727272;
-  }
-`;

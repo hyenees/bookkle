@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React from "react";
 import api from "api";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
@@ -16,6 +15,9 @@ import Name from "widget/Name";
 import { BookImg, BookImgBox } from "widget/BookImg";
 import Grade from "widget/Grade";
 import { CircleButton } from "widget/SmallButton";
+import BookInfo from "widget/BookInfo";
+import { ReviewContent, Contents } from "widget/ReviewContent";
+import Quote from "widget/Quote";
 
 interface ReviewDetailProps {
   closeDetail: () => void;
@@ -36,8 +38,7 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
     e.stopPropagation();
     if (localStorage.getItem("myId")) {
       dispatch(clickHeartBtn(id));
-      const response = await api.likeReview(id);
-      console.log(response);
+      await api.likeReview(id);
     } else {
       alert("로그인이 필요한 서비스입니다.");
     }
@@ -49,10 +50,9 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
         <CircleButton mode="default">
           <AiOutlineClose size="20" onClick={closeDetail} />
         </CircleButton>
-
         {reviewDetail && (
           <>
-            <BookInfo>
+            <BookInfo detail>
               <BookImgBox review>
                 <BookImg
                   src={reviewDetail.book_detail.image}
@@ -81,7 +81,7 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
             <ReviewContent>
               <Title review>{reviewDetail.title}</Title>
               <Name>{reviewDetail.user_info.nickname}</Name>
-              <div className="contents">{reviewDetail.content}</div>
+              <Contents>{reviewDetail.content}</Contents>
               <CircleButton
                 mode="detail"
                 onClick={(e) => recommendReview(e, reviewDetail.id)}
@@ -120,59 +120,3 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
 };
 
 export default ReviewDetail;
-
-const BookInfo = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 10px auto 40px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #ddd;
-
-  .book-title {
-    padding: 15px 0 0 15px;
-    align-self: center;
-  }
-`;
-
-const ReviewContent = styled.div`
-  width: 100%;
-  letter-spacing: 0.3px;
-  text-align: center;
-
-  .contents {
-    margin-top: 18px;
-    text-align: left;
-    font-family: "IBMPlexSansKR-Light";
-    white-space: pre-line;
-  }
-`;
-
-const Quote = styled.blockquote`
-  position: relative;
-  margin-top: 20px;
-  padding: 20px;
-  /* quotes: "“" "”" "‘" "’"; */
-  font-size: 16px;
-  font-family: "RIDIBatang";
-  word-break: keep-all;
-  text-align: center;
-  background: #f4f4f4;
-  border-radius: 5px;
-
-  &::before {
-    content: open-quote;
-    position: absolute;
-    top: 6%;
-    left: 0;
-    font-size: 2em;
-  }
-
-  &::after {
-    content: close-quote;
-    position: absolute;
-    top: 6%;
-    right: 0;
-
-    font-size: 2em;
-  }
-`;
