@@ -80,6 +80,7 @@ const ReviewReducer = (
         ...state,
         followReviews: action.payload,
       };
+
     default:
       return state;
   }

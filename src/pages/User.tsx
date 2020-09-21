@@ -4,7 +4,12 @@ import styled from "styled-components";
 import api from "api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "reducers";
-import { getProfile, getReviewList, removeReview } from "actions";
+import {
+  getProfile,
+  getReviewList,
+  removeReview,
+  countFollower,
+} from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import { BsPersonPlusFill } from "react-icons/bs";
@@ -30,10 +35,10 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
     (async () => {
       const res = await api.getProfile(props.match.params.id);
       dispatch(getProfile(res));
-      if (res.is_follow) {
-        setIsClickedFollowBtn(!isClickedFollowBtn);
-      }
-      setFollowers(res.follower_count);
+      // if (res.is_follow) {
+      //   setIsClickedFollowBtn(!isClickedFollowBtn);
+      // }
+      // setFollowers(res.follower_count);
     })();
   }, [dispatch, props.match.params.id]);
 
@@ -51,16 +56,17 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
   };
 
   const followUser = async (id: number | undefined) => {
-    const res = await api.followUser(id);
-    console.log("res", res);
-    setIsClickedFollowBtn(!isClickedFollowBtn);
-    if (followers !== undefined) {
-      if (isClickedFollowBtn) {
-        setFollowers(followers - 1);
-      } else {
-        setFollowers(followers + 1);
-      }
-    }
+    // const res = await api.followUser(id);
+    // console.log("res", res);
+    // setIsClickedFollowBtn(!isClickedFollowBtn);
+    // if (followers !== undefined) {
+    //   if (isClickedFollowBtn) {
+    //     setFollowers(followers - 1);
+    //   } else {
+    //     setFollowers(followers + 1);
+    //   }
+    // }
+    dispatch(countFollower());
   };
 
   return (
@@ -79,7 +85,7 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
                   mode="default"
                   onClick={() => followUser && followUser(profile?.id)}
                 >
-                  {isClickedFollowBtn ? (
+                  {profile?.is_follow ? (
                     <BsPersonPlusFill size="26" />
                   ) : (
                     <BsPersonPlus size="26" />
@@ -91,9 +97,10 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
           <TopTitle mode="mypage">
             <div className="followers">Followers</div>
             <div className="followers count">
-              {props.match.params.id === localStorage.getItem("myId")
+              {/* {props.match.params.id === localStorage.getItem("myId")
                 ? profile?.follower_count
-                : followers}
+                : followers} */}
+              {profile?.follower_count}
             </div>
           </TopTitle>
         </UserInfo>

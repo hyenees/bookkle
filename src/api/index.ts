@@ -52,7 +52,8 @@ export default {
   },
 
   getProfile: async (id: string): Promise<Profile> => {
-    const res = await fetchClient.get<Profile>(`/accounts/profile/${id}`);
+    // const res = await fetchClient.get<Profile>(`/accounts/profile/${id}`);
+    const res = await fetchClient.get<Profile>("/user.json");
     return res.data;
   },
 
