@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";

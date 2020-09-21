@@ -1,6 +1,5 @@
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
-// import NanumMyeongjo from "styles/fonts/NanumMyeongjo_LW_R.woff2";
 import NanumMyeongjo from "styles/fonts/NanumMyeongjo-Regular.ttf";
 import NanumMyeongjoBold from "styles/fonts/NanumMyeongjo-Bold.ttf";
 

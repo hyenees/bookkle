@@ -1,5 +1,5 @@
 import fetchClient from "./instance";
-import axios, { AxiosResponse, AxiosInstance } from "axios";
+import axios from "axios";
 import { ReviewData, Book, Profile } from "store/types";
 
 export default {
@@ -11,8 +11,12 @@ export default {
         headers: { Authorization: "KakaoAK e23535b3c49c44d77ffac09377ac9d58" },
       }
     );
-    console.log(res);
     return res.data.documents;
+  },
+
+  getQuote: async () => {
+    const res = await fetchClient.get("/reviews/quote");
+    return res.data;
   },
 
   getReviews: async (): Promise<ReviewData[]> => {
@@ -26,7 +30,6 @@ export default {
     const res = await fetchClient.get<{ results: ReviewData[] }>(
       `/reviews?limit=8&offset=${offset}`
     );
-    console.log(res);
     return res.data.results;
   },
 
@@ -46,8 +49,8 @@ export default {
   },
 
   getReviewDetail: async (id: number): Promise<ReviewData> => {
-    const res = await fetchClient.get(`/reviews/${id}`);
-    // const res = await fetchClient.get("/reviewDetail.json");
+    // const res = await fetchClient.get(`/reviews/${id}`);
+    const res = await fetchClient.get("/reviewDetail.json");
     return res.data;
   },
 
@@ -63,8 +66,8 @@ export default {
   },
 
   getFollowReviews: async () => {
-    // const res = await fetchClient.get("/followReviews.json");
-    const res = await fetchClient.get("/reviews/following");
+    const res = await fetchClient.get("/followReviews.json");
+    // const res = await fetchClient.get("/reviews/following");
     return res.data.results;
   },
 
@@ -113,6 +116,15 @@ export default {
   signIn: async (email: string, password: string) => {
     const res = await fetchClient.post("/accounts/signin", {
       email,
+      password,
+    });
+    return res;
+  },
+
+  signUp: async (email: string, nickname: string, password: string) => {
+    const res = await fetchClient.post("/accounts/signup", {
+      email,
+      nickname,
       password,
     });
     return res;

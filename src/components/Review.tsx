@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import api from "api";
 import styled from "styled-components";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -16,6 +16,8 @@ import ItemBox from "widget/ItemBox";
 import Title from "widget/Title";
 import Grade from "widget/Grade";
 import { CircleButton, TextButton, Buttons } from "widget/SmallButton";
+import { ReviewContent, Contents } from "widget/ReviewContent";
+import BookInfo from "widget/BookInfo";
 
 interface ReviewProps extends RouteComponentProps {
   openDetail?: (id: number) => void;
@@ -33,7 +35,6 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
   useEffect(() => {
     dispatch(clickHeartBtn(0));
     reviews.forEach((review) => {
-      console.log("a");
       if (review.is_like) {
         dispatch(clickHeartBtn(review.id));
       }
@@ -47,8 +48,7 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
   ) => {
     e.stopPropagation();
     if (localStorage.getItem("myId")) {
-      const response = await api.likeReview(id);
-      console.log(response.data.message);
+      await api.likeReview(id);
       dispatch(countLike(id));
       dispatch(clickHeartBtn(id));
     } else {
@@ -58,7 +58,6 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
 
   return (
     <>
-      {console.log(reviewIds)}
       {reviews.map((review: ReviewData, idx: number) => (
         <ItemBox
           mode="review"
@@ -66,14 +65,14 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
           right={(idx + 1) % 4 === 0}
           onClick={() => openDetail && openDetail(review.id)}
         >
-          <BookInfo>
-            <img src={review.book_detail.image} alt="" />
+          <BookInfo review>
+            <BookCover src={review.book_detail.image} alt="" />
             <div className="book-title">
               <Title>{review.book_detail.title}</Title>
               <Name book>{review.book_detail.author}</Name>
             </div>
           </BookInfo>
-          <ReviewContent>
+          <ReviewContent review>
             <Title review>{review.title}</Title>
             <Name
               onClick={() => {
@@ -85,11 +84,11 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
             >
               {review.user_info.nickname}
             </Name>
-            <div className="contents">
+            <Contents review>
               {review.content.length > 150
                 ? `${review.content.slice(0, 150)}...`
                 : review.content}
-            </div>
+            </Contents>
           </ReviewContent>
           <Grade>
             <CgSmile
@@ -141,37 +140,10 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
 
 export default withRouter(Review);
 
-const ReviewContent = styled.div`
-  width: 100%;
-  height: 278px;
-  letter-spacing: 0.3px;
-  text-align: center;
-
-  .contents {
-    margin-top: 18px;
-    text-align: left;
-    font-family: "IBMPlexSansKR-Light";
-    white-space: pre-line;
-
-    @media (max-width: 375px) {
-      font-size: 14px;
-    }
-  }
-`;
-
-const BookInfo = styled.div`
-  display: flex;
-  justify-content: space-around;
-
-  img {
-    display: block;
-    position: relative;
-    top: -25px;
-    height: 130px;
-    box-shadow: rgba(0, 0, 0, 0.25) 8px 8px 8px -2px;
-  }
-  .book-title {
-    padding: 15px 0 0 15px;
-    align-self: center;
-  }
+const BookCover = styled.img`
+  display: block;
+  position: relative;
+  top: -25px;
+  height: 130px;
+  box-shadow: rgba(0, 0, 0, 0.25) 8px 8px 8px -2px;
 `;

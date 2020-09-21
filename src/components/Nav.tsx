@@ -6,7 +6,7 @@ import SearchModal from "components/SearchModal";
 import logo from "images/logo.png";
 import { MdAccountCircle } from "react-icons/md";
 import { BiBookAdd } from "react-icons/bi";
-import { Buttons, CircleButton } from "widget/SmallButton";
+import { Buttons } from "widget/SmallButton";
 
 const Nav: React.FunctionComponent<RouteComponentProps> = (props) => {
   const [isOpenAccount, setIsOpenAccount] = useState<boolean>(false);

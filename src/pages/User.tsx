@@ -46,7 +46,6 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
     (async () => {
       const res = await api.getMyReviews(props.match.params.id);
       dispatch(getReviewList(res));
-      console.log(res);
     })();
   }, [dispatch, props.match.params.id]);
 

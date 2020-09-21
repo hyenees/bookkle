@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import api from "api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "reducers";
-import {
-  getReviewList,
-  getReview,
-  addReviewList,
-  clickHeartBtn,
-} from "actions";
+import { getReviewList, getReview, addReviewList } from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
 import ReviewDetail from "./ReviewDetail";
-import { API_URL } from "config";
 import { ImQuotesLeft } from "react-icons/im";
 import { ImQuotesRight } from "react-icons/im";
 import Layout from "widget/Layout";
@@ -39,12 +32,16 @@ const Main: React.FunctionComponent = () => {
   );
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/reviews/quote`, { withCredentials: true })
-      .then((res) => {
-        console.log(res);
-        setRandomQuote(res.data);
-      });
+    // axios
+    //   .get(`${API_URL}/reviews/quote`, { withCredentials: true })
+    //   .then((res) => {
+    //     console.log(res);
+    //     setRandomQuote(res.data);
+    //   });
+    (async () => {
+      const res = await api.getQuote();
+      setRandomQuote(res);
+    })();
   }, []);
 
   useEffect(() => {
@@ -87,10 +84,6 @@ const Main: React.FunctionComponent = () => {
             <div className="top-quote"></div>
           </QuoteIcon>
           <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle>
-          {/* <TopTitle mode="quote">
-            언제 어디서나 추함은 아름다운면을 지니고 있다. 아무도 그것을
-            알아채지 못한 곳에서 그것들을 발견하는 것은 매우 짜릿하다.
-          </TopTitle> */}
           <div className="quote-info">
             {randomQuote && randomQuote.book_author}&nbsp; &lt;
             {randomQuote && randomQuote.book_title}&gt;
