@@ -40,7 +40,7 @@ const Review: React.FunctionComponent<ReviewProps> = (props) => {
       }
       dispatch(getLikeCount(review.id, review.recommend_count));
     });
-  }, [reviews]);
+  }, [reviews, dispatch]);
 
   const recommendReview = async (
     e: React.MouseEvent<HTMLButtonElement>,
