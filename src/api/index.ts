@@ -49,14 +49,12 @@ export default {
   },
 
   getReviewDetail: async (id: number): Promise<ReviewData> => {
-    // const res = await fetchClient.get(`/reviews/${id}`);
-    const res = await fetchClient.get("/reviewDetail.json");
+    const res = await fetchClient.get(`/reviews/${id}`);
     return res.data;
   },
 
   getProfile: async (id: string): Promise<Profile> => {
-    // const res = await fetchClient.get<Profile>(`/accounts/profile/${id}`);
-    const res = await fetchClient.get<Profile>("/user.json");
+    const res = await fetchClient.get<Profile>(`/accounts/profile/${id}`);
     return res.data;
   },
 
@@ -66,8 +64,7 @@ export default {
   },
 
   getFollowReviews: async () => {
-    const res = await fetchClient.get("/followReviews.json");
-    // const res = await fetchClient.get("/reviews/following");
+    const res = await fetchClient.get("/reviews/following");
     return res.data.results;
   },
 

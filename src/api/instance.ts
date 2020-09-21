@@ -2,9 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 const fetchClient = () => {
   const instance: AxiosInstance = axios.create({
-    // baseURL: "http://192.168.0.2:8000",
-    baseURL: "http://localhost:3000/data",
-    withCredentials: true,
+    baseURL: "http://18.204.229.170:8000",
   });
 
   instance.interceptors.request.use((config: AxiosRequestConfig) => {

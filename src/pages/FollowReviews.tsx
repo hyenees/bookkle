@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
 import api from "api";
@@ -38,7 +38,7 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
       }
       dispatch(getLikeCount(review.id, review.recommend_count));
     });
-  }, [followReviews]);
+  }, [followReviews, dispatch]);
 
   useEffect(() => {
     (async () => {

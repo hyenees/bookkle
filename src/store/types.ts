@@ -25,6 +25,11 @@ export interface BookDetail {
   image: string;
 }
 
+export interface UserInfo {
+  id: number;
+  nickname: string;
+}
+
 export interface ReviewData {
   id: number;
   book_detail: BookDetail;
@@ -37,11 +42,6 @@ export interface ReviewData {
   rating: number;
   content: string;
   is_like: boolean;
-}
-
-export interface UserInfo {
-  id: number;
-  nickname: string;
 }
 
 export interface Book {
