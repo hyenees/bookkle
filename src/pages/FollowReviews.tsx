@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styled from "styled-components";
 import api from "api";
@@ -8,6 +8,7 @@ import { clickHeartBtn, getLikeCount, countLike } from "actions";
 import { ReviewData } from "store/types";
 import { getFollowReviews } from "actions";
 import Nav from "components/Nav";
+import Loading from "components/Loading";
 import { HiHeart } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
 import { CgSmile } from "react-icons/cg";
@@ -23,12 +24,14 @@ import { BookImg, BookImgBox } from "widget/BookImg";
 import Grade from "widget/Grade";
 import { ReviewContent, Contents } from "widget/ReviewContent";
 import Quote from "widget/Quote";
+import EmptyMsg from "widget/EmptyMsg";
 
 const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
   const { reviewIds, followReviews, countHeart } = useSelector(
     (state: RootState) => state.ReviewReducer
   );
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     dispatch(clickHeartBtn(0));
@@ -44,6 +47,7 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
     (async () => {
       const res = await api.getFollowReviews();
       dispatch(getFollowReviews(res));
+      setIsLoading(false);
     })();
   }, [dispatch]);
 
@@ -60,74 +64,78 @@ const FollowReviews: React.FunctionComponent<RouteComponentProps> = (props) => {
   return (
     <>
       <Nav />
-      <Layout>
-        <TopTitle mode="mypage">Follow</TopTitle>
-        {followReviews.length > 0 ? (
-          <ListBoard following>
-            {followReviews.map((review: ReviewData, idx: number) => (
-              <Following key={idx}>
-                <div className="user">
-                  <Nickname
-                    onClick={() =>
-                      props.history.push(`user/${review.user_info.id}`)
-                    }
-                  >
-                    {review.user_info.nickname}
-                  </Nickname>
-                  <CircleButton
-                    mode="detail"
-                    onClick={(e) => recommendReview(e, review.id)}
-                  >
-                    {reviewIds.includes(review.id) ? (
-                      <HiHeart size="18" color="#d3492a" />
-                    ) : (
-                      <HiOutlineHeart size="18" />
-                    )}
-                    {countHeart && countHeart[review.id]}
-                  </CircleButton>
-                </div>
-                <div className="review-contents">
-                  <BookInfo>
-                    <BookImgBox bookList>
-                      <BookImg
-                        src={review.book_detail.image}
-                        alt="book-cover"
-                      />
-                    </BookImgBox>
-                    <div className="book-info">
-                      <Title follow>{review.book_detail.title}</Title>
-                      <Name follow>{review.book_detail.author}</Name>
-                      <Grade follow>
-                        <CgSmile
-                          size="30"
-                          className={review.rating === 1 ? "select" : ""}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Layout>
+          <TopTitle mode="mypage">Follow</TopTitle>
+          {followReviews.length > 0 ? (
+            <ListBoard following>
+              {followReviews.map((review: ReviewData, idx: number) => (
+                <Following key={idx}>
+                  <div className="user">
+                    <Nickname
+                      onClick={() =>
+                        props.history.push(`user/${review.user_info.id}`)
+                      }
+                    >
+                      {review.user_info.nickname}
+                    </Nickname>
+                    <CircleButton
+                      mode="detail"
+                      onClick={(e) => recommendReview(e, review.id)}
+                    >
+                      {reviewIds.includes(review.id) ? (
+                        <HiHeart size="18" color="#d3492a" />
+                      ) : (
+                        <HiOutlineHeart size="18" />
+                      )}
+                      {countHeart && countHeart[review.id]}
+                    </CircleButton>
+                  </div>
+                  <div className="review-contents">
+                    <BookInfo>
+                      <BookImgBox bookList>
+                        <BookImg
+                          src={review.book_detail.image}
+                          alt="book-cover"
                         />
-                        <CgSmileNone
-                          size="30"
-                          className={review.rating === 2 ? "select" : ""}
-                        />
-                        <CgSmileSad
-                          size="30"
-                          className={review.rating === 3 ? "select" : ""}
-                        />
-                      </Grade>
-                    </div>
-                  </BookInfo>
-                  <ReviewContent follow>
-                    <Title review>{review.title}</Title>
-                    <Contents follow>{review.content}</Contents>
-                    <Quote>{review.quote}</Quote>
-                  </ReviewContent>
-                </div>
-              </Following>
-            ))}
-          </ListBoard>
-        ) : (
-          <EmptyMsg>
-            <TopTitle mode="main">팔로우한 유저가 없습니다.</TopTitle>
-          </EmptyMsg>
-        )}
-      </Layout>
+                      </BookImgBox>
+                      <div className="book-info">
+                        <Title follow>{review.book_detail.title}</Title>
+                        <Name follow>{review.book_detail.author}</Name>
+                        <Grade follow>
+                          <CgSmile
+                            size="30"
+                            className={review.rating === 1 ? "select" : ""}
+                          />
+                          <CgSmileNone
+                            size="30"
+                            className={review.rating === 2 ? "select" : ""}
+                          />
+                          <CgSmileSad
+                            size="30"
+                            className={review.rating === 3 ? "select" : ""}
+                          />
+                        </Grade>
+                      </div>
+                    </BookInfo>
+                    <ReviewContent follow>
+                      <Title review>{review.title}</Title>
+                      <Contents follow>{review.content}</Contents>
+                      <Quote>{review.quote}</Quote>
+                    </ReviewContent>
+                  </div>
+                </Following>
+              ))}
+            </ListBoard>
+          ) : (
+            <EmptyMsg>
+              <TopTitle mode="main">팔로우한 유저가 없습니다.</TopTitle>
+            </EmptyMsg>
+          )}
+        </Layout>
+      )}
     </>
   );
 };
@@ -179,12 +187,4 @@ const Nickname = styled.h1`
     color: #d3492a;
     cursor: pointer;
   }
-`;
-
-const EmptyMsg = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 68vh;
-  color: #4a4a4a;
 `;

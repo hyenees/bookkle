@@ -29,6 +29,7 @@ const UserReducer = (
           },
         };
       }
+      return state;
     default:
       return state;
   }

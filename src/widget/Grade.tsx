@@ -12,15 +12,15 @@ const Grade = styled.div<GradeStyle>`
   color: #4a4a4a;
 
   .select {
-    color: #da2a00;
+    color: #d3492a;
   }
 
   .posting:hover {
-    color: #da2a00;
+    color: #d3492a;
     cursor: pointer;
   }
   .rating {
-    color: #da2a00;
+    color: #d3492a;
   }
 `;
 
