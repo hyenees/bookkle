@@ -25,14 +25,17 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
   });
 
   const clickSignIn = async () => {
-    const res = await api.signIn(signInValue.email, signInValue.password);
-    if (res.status === 400) {
-      alert("이메일과 비밀번호를 확인해주세요.");
+    try {
+      const res = await api.signIn(signInValue.email, signInValue.password);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("myId", res.data.user_id);
+      props.closeAccount();
+      props.history.push("/");
+    } catch (err) {
+      if (err.response.status === 400) {
+        alert("이메일과 비밀번호를 확인해주세요.");
+      }
     }
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("myId", res.data.user_id);
-    props.closeAccount();
-    props.history.push("/");
   };
 
   return (

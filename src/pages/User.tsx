@@ -12,12 +12,14 @@ import {
 } from "actions";
 import Nav from "components/Nav";
 import Review from "components/Review";
+import Loading from "components/Loading";
 import { BsPersonPlusFill } from "react-icons/bs";
 import { BsPersonPlus } from "react-icons/bs";
 import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
 import { CircleButton } from "widget/SmallButton";
+import EmptyMsg from "widget/EmptyMsg";
 
 interface UserProps {
   id: string;
@@ -27,18 +29,15 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
   props
 ) => {
   const { profile } = useSelector((state: RootState) => state.UserReducer);
-  const [isClickedFollowBtn, setIsClickedFollowBtn] = useState<boolean>(false);
-  const [followers, setFollowers] = useState<number | undefined>();
+  const { reviews } = useSelector((state: RootState) => state.ReviewReducer);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
       const res = await api.getProfile(props.match.params.id);
       dispatch(getProfile(res));
-      // if (res.is_follow) {
-      //   setIsClickedFollowBtn(!isClickedFollowBtn);
-      // }
-      // setFollowers(res.follower_count);
+      setIsLoading(false);
     })();
   }, [dispatch, props.match.params.id]);
 
@@ -50,63 +49,62 @@ const User: React.FunctionComponent<RouteComponentProps<UserProps>> = (
   }, [dispatch, props.match.params.id]);
 
   const deleteReview = async (id: number) => {
-    const res = await api.removeReview(id);
+    await api.removeReview(id);
     dispatch(removeReview(id));
   };
 
   const followUser = async (id: number | undefined) => {
-    // const res = await api.followUser(id);
-    // console.log("res", res);
-    // setIsClickedFollowBtn(!isClickedFollowBtn);
-    // if (followers !== undefined) {
-    //   if (isClickedFollowBtn) {
-    //     setFollowers(followers - 1);
-    //   } else {
-    //     setFollowers(followers + 1);
-    //   }
-    // }
+    await api.followUser(id);
     dispatch(countFollower());
   };
 
   return (
     <>
       <Nav />
-      <Layout>
-        <UserInfo>
-          <TopTitle mode="mypage">
-            {localStorage.getItem("myId") === props.match.params.id ? (
-              `안녕하세요,  ${profile?.nickname}님!`
-            ) : (
-              <>
-                {profile?.nickname}
-                &nbsp;&nbsp;
-                <CircleButton
-                  mode="default"
-                  onClick={() => followUser && followUser(profile?.id)}
-                >
-                  {profile?.is_follow ? (
-                    <BsPersonPlusFill size="26" />
-                  ) : (
-                    <BsPersonPlus size="26" />
-                  )}
-                </CircleButton>
-              </>
-            )}
-          </TopTitle>
-          <TopTitle mode="mypage">
-            <div className="followers">Followers</div>
-            <div className="followers count">
-              {/* {props.match.params.id === localStorage.getItem("myId")
-                ? profile?.follower_count
-                : followers} */}
-              {profile?.follower_count}
-            </div>
-          </TopTitle>
-        </UserInfo>
-        <ListBoard>
-          <Review myId={props.match.params.id} deleteReview={deleteReview} />
-        </ListBoard>
-      </Layout>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Layout>
+          <UserInfo>
+            <TopTitle mode="mypage">
+              {localStorage.getItem("myId") === props.match.params.id ? (
+                `안녕하세요,  ${profile?.nickname}님!`
+              ) : (
+                <>
+                  {profile?.nickname}
+                  &nbsp;&nbsp;
+                  <CircleButton
+                    mode="default"
+                    onClick={() => followUser && followUser(profile?.id)}
+                  >
+                    {profile?.is_follow ? (
+                      <BsPersonPlusFill size="26" />
+                    ) : (
+                      <BsPersonPlus size="26" />
+                    )}
+                  </CircleButton>
+                </>
+              )}
+            </TopTitle>
+            <TopTitle mode="mypage">
+              <div className="followers">Followers</div>
+              <div className="followers count">{profile?.follower_count}</div>
+            </TopTitle>
+          </UserInfo>
+          {reviews.length > 0 ? (
+            <ListBoard>
+              <Review
+                myId={props.match.params.id}
+                deleteReview={deleteReview}
+              />
+            </ListBoard>
+          ) : (
+            <EmptyMsg>
+              <TopTitle mode="main">등록된 리뷰가 없습니다.</TopTitle>
+            </EmptyMsg>
+          )}
+        </Layout>
+      )}
     </>
   );
 };

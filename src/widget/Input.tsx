@@ -7,6 +7,8 @@ const Input = styled.input`
   margin-top: 10px;
   border: 1px solid #f4f4f4;
   color: #727272;
+  font-family: "IBMPlexSansKR-Regular";
+  letter-spacing: 0.3px;
 `;
 
 export default Input;

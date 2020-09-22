@@ -20,9 +20,7 @@ export default {
   },
 
   getReviews: async (): Promise<ReviewData[]> => {
-    const res = await fetchClient.get<{ results: ReviewData[] }>(
-      "/reviews.json"
-    );
+    const res = await fetchClient.get<{ results: ReviewData[] }>("/reviews");
     return res.data.results;
   },
 

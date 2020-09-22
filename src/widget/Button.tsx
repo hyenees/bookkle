@@ -14,6 +14,9 @@ const Button = styled.button<ButtonStyle>`
   color: ${(props) => (props.isActive ? "#ebe9e8" : "#d3492a")};
   border-radius: 25px;
   font-weight: 700;
+  font-family: "IBMPlexSansKR-Text";
+  font-size: 14px;
+  letter-spacing: 0.3px;
 
   &:hover {
     ${(props) =>

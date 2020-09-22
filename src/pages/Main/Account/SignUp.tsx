@@ -34,38 +34,26 @@ const SignUp: React.FunctionComponent = (props) => {
       signUpValue.email.includes("@" && ".") &&
       signUpValue.nickname.length > 0
     ) {
-      // axios
-      //   .post(`${API_URL}/accounts/signup`, {
-      //     email: signUpValue.email,
-      //     nickname: signUpValue.nickname,
-      //     password: signUpValue.password,
-      //   })
-      //   .then((res) => console.log(res))
-      //   .catch((err) => {
-      //     console.log(err.response);
-      //     setErrMsg(err.response.data);
-      //   });
-      // setIsBtnClicked(true);
       (async () => {
         try {
-          const res = await api.signUp(
+          await api.signUp(
             signUpValue.email,
             signUpValue.nickname,
             signUpValue.password
           );
-          console.log(res);
+          setIsBtnClicked(true);
         } catch (err) {
-          console.log(err);
+          console.log(err.response);
           setErrMsg(err.response.data);
         }
       })();
-      setIsBtnClicked(true);
     }
   };
 
   return (
     <>
-      {isBtnClicked && errMsg === null ? (
+      {console.log(errMsg, isBtnClicked)}
+      {errMsg === null && isBtnClicked ? (
         <Notification>인증메일이 발송되었습니다.</Notification>
       ) : (
         <>

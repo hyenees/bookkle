@@ -13,6 +13,7 @@ import Layout from "widget/Layout";
 import ListBoard from "widget/ListBoard";
 import TopTitle from "widget/TopTitle";
 import Button from "widget/Button";
+import Loading from "components/Loading";
 
 export interface QuoteInfo {
   book_title: string;
@@ -25,22 +26,16 @@ const LIMIT = 8;
 const Main: React.FunctionComponent = () => {
   const [randomQuote, setRandomQuote] = useState<QuoteInfo | null>(null);
   const [isReviewOpened, setIsReviewOpened] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(8);
   const dispatch = useDispatch();
-  const { reviews, reviewIds } = useSelector(
-    (state: RootState) => state.ReviewReducer
-  );
+  const { reviews } = useSelector((state: RootState) => state.ReviewReducer);
 
   useEffect(() => {
-    // axios
-    //   .get(`${API_URL}/reviews/quote`, { withCredentials: true })
-    //   .then((res) => {
-    //     console.log(res);
-    //     setRandomQuote(res.data);
-    //   });
     (async () => {
       const res = await api.getQuote();
       setRandomQuote(res);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -74,33 +69,44 @@ const Main: React.FunctionComponent = () => {
   return (
     <>
       <Nav />
-      <Layout>
-        <TopTitle mode="main">
-          생각을 기록하고 책으로 소통하는 공간, &nbsp;<span>북끌BooKkle</span>
-        </TopTitle>
-        <SentenceBox>
-          <QuoteIcon>
-            <ImQuotesLeft size="26" />
-            <div className="top-quote"></div>
-          </QuoteIcon>
-          <TopTitle mode="quote">{randomQuote && randomQuote.quote}</TopTitle>
-          <div className="quote-info">
-            {randomQuote && randomQuote.book_author}&nbsp; &lt;
-            {randomQuote && randomQuote.book_title}&gt;
-          </div>
-          <QuoteIcon right>
-            <div className="bottom-quote"></div>
-            <ImQuotesRight size="26" />
-          </QuoteIcon>
-        </SentenceBox>
-        <ListBoard>
-          <Review openDetail={openDetail} />
-        </ListBoard>
-        <Button posting onClick={() => viewMoreReviews(offset)}>
-          더 보기
-        </Button>
-      </Layout>
-      {isReviewOpened && <ReviewDetail closeDetail={closeDetail} />}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <Layout>
+            <TopTitle mode="main">
+              생각을 기록하고 책으로 소통하는 공간, &nbsp;
+              <span>북끌BooKkle</span>
+            </TopTitle>
+            <SentenceBox>
+              <QuoteIcon>
+                <ImQuotesLeft size="26" />
+                <div className="top-quote"></div>
+              </QuoteIcon>
+              <TopTitle mode="quote">
+                {randomQuote && randomQuote.quote}
+              </TopTitle>
+              <div className="quote-info">
+                {randomQuote && randomQuote.book_author}&nbsp; &lt;
+                {randomQuote && randomQuote.book_title}&gt;
+              </div>
+              <QuoteIcon right>
+                <div className="bottom-quote"></div>
+                <ImQuotesRight size="26" />
+              </QuoteIcon>
+            </SentenceBox>
+            <ListBoard>
+              <Review openDetail={openDetail} />
+            </ListBoard>
+            {reviews.length >= 8 && (
+              <Button posting onClick={() => viewMoreReviews(offset)}>
+                더 보기
+              </Button>
+            )}
+          </Layout>
+          {isReviewOpened && <ReviewDetail closeDetail={closeDetail} />}
+        </>
+      )}
     </>
   );
 };
