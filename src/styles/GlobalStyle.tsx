@@ -75,6 +75,12 @@ li {
   list-style: none;
 }
 
+textarea{
+  font-family: 'IBMPlexSansKR-Regular';
+  font-size : 14px;
+  line-height: 1.5;
+}
+
 input:focus,
 button:focus,
 select:focus,

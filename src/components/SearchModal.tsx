@@ -14,6 +14,13 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
   const [searchBook, setSearchBook] = useState<string>("");
   const { closeSearch } = props;
 
+  const clickSearchBtn = () => {
+    props.history.push(`/booklist/${searchBook}`, {
+      searchBook: searchBook,
+    });
+    closeSearch();
+  };
+
   return (
     <>
       <ModalLayout onClick={closeSearch}>
@@ -27,17 +34,13 @@ const SearchModal: React.FunctionComponent<SearchModalProps> = (props) => {
           <SearchInput
             placeholder="리뷰하고 싶은 책 제목을 입력하세요."
             onChange={(e) => setSearchBook(e.target.value)}
-          />
-          <CircleButton
-            mode="default"
-            search
-            onClick={() => {
-              props.history.push(`/booklist/${searchBook}`, {
-                searchBook: searchBook,
-              });
-              closeSearch();
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                clickSearchBtn();
+              }
             }}
-          >
+          />
+          <CircleButton mode="default" search onClick={clickSearchBtn}>
             <BsSearch size="20" />
           </CircleButton>
         </ModalBox>

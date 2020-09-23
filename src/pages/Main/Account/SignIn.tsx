@@ -58,6 +58,11 @@ const SignIn: React.FunctionComponent<SignInProps> = (props) => {
             onChange={(e) =>
               setSignInValue({ ...signInValue, password: e.target.value })
             }
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                clickSignIn();
+              }
+            }}
           />
           <RiLock2Line className="lock-icon" />
         </InputBox>

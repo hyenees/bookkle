@@ -2,7 +2,7 @@ import React from "react";
 import api from "api";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "reducers";
-import { clickHeartBtn } from "actions";
+import { clickHeartBtn, countLike } from "actions";
 import { CgSmile } from "react-icons/cg";
 import { CgSmileSad } from "react-icons/cg";
 import { CgSmileNone } from "react-icons/cg";
@@ -27,7 +27,7 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
   const { reviewIds } = useSelector((state: RootState) => state.ReviewReducer);
   const { closeDetail } = props;
   const dispatch = useDispatch();
-  const { reviewDetail } = useSelector(
+  const { reviewDetail, countHeart } = useSelector(
     (state: RootState) => state.ReviewReducer
   );
 
@@ -37,8 +37,9 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
   ) => {
     e.stopPropagation();
     if (localStorage.getItem("myId")) {
-      dispatch(clickHeartBtn(id));
       await api.likeReview(id);
+      dispatch(countLike(id));
+      dispatch(clickHeartBtn(id));
     } else {
       alert("로그인이 필요한 서비스입니다.");
     }
@@ -86,29 +87,12 @@ const ReviewDetail: React.FunctionComponent<ReviewDetailProps> = (props) => {
                 mode="detail"
                 onClick={(e) => recommendReview(e, reviewDetail.id)}
               >
-                {reviewDetail.is_like ? (
-                  reviewIds.includes(reviewDetail.id) ? (
-                    <>
-                      <HiHeart size="18" color="#d3492a" />
-                      {reviewDetail.recommend_count}
-                    </>
-                  ) : (
-                    <>
-                      <HiOutlineHeart size="18" />
-                      {reviewDetail.recommend_count - 1}
-                    </>
-                  )
-                ) : reviewIds.includes(reviewDetail.id) ? (
-                  <>
-                    <HiHeart size="18" color="#d3492a" />
-                    {reviewDetail.recommend_count + 1}
-                  </>
+                {reviewIds.includes(reviewDetail.id) ? (
+                  <HiHeart size="18" color="#d3492a" />
                 ) : (
-                  <>
-                    <HiOutlineHeart size="18" />
-                    {reviewDetail.recommend_count}
-                  </>
+                  <HiOutlineHeart size="18" />
                 )}
+                {countHeart && countHeart[reviewDetail.id]}
               </CircleButton>
             </ReviewContent>
             <Quote>{reviewDetail.quote}</Quote>

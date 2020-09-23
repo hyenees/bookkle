@@ -43,7 +43,6 @@ const SignUp: React.FunctionComponent = (props) => {
           );
           setIsBtnClicked(true);
         } catch (err) {
-          console.log(err.response);
           setErrMsg(err.response.data);
         }
       })();
@@ -52,7 +51,6 @@ const SignUp: React.FunctionComponent = (props) => {
 
   return (
     <>
-      {console.log(errMsg, isBtnClicked)}
       {errMsg === null && isBtnClicked ? (
         <Notification>인증메일이 발송되었습니다.</Notification>
       ) : (
@@ -91,6 +89,11 @@ const SignUp: React.FunctionComponent = (props) => {
                 onChange={(e) =>
                   setSignUpValue({ ...signUpValue, password: e.target.value })
                 }
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    clickSignUp();
+                  }
+                }}
               />
             </InputBox>
             {!pwReg.test(signUpValue.password) &&
