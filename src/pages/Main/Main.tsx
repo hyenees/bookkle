@@ -43,7 +43,6 @@ const Main: React.FunctionComponent = () => {
     const fetchReviews = async () => {
       const res = await api.getReviews();
       dispatch(getReviewList(res));
-      console.log(res);
     };
     fetchReviews();
   }, [dispatch]);
@@ -51,7 +50,6 @@ const Main: React.FunctionComponent = () => {
   const viewMoreReviews = async (offset: number) => {
     const res = await api.addReviews(offset);
     dispatch(addReviewList(res));
-    console.log(res);
     setOffset(offset + LIMIT);
   };
 
@@ -62,7 +60,6 @@ const Main: React.FunctionComponent = () => {
   const openDetail = async (id: number) => {
     const res = await api.getReviewDetail(id);
     dispatch(getReview(res));
-    console.log(res);
     setIsReviewOpened(true);
   };
 
