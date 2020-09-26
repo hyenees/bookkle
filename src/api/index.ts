@@ -1,6 +1,7 @@
 import fetchClient from "./instance";
 import axios from "axios";
 import { ReviewData, Book, Profile } from "store/types";
+import { kakaoKey } from "kakaoKey";
 
 export default {
   getBooks: async (searchBook: string): Promise<Book[]> => {
@@ -8,7 +9,7 @@ export default {
       "https://dapi.kakao.com/v3/search/book?target=title",
       {
         params: { query: searchBook, size: 50 },
-        headers: { Authorization: "KakaoAK e23535b3c49c44d77ffac09377ac9d58" },
+        headers: { Authorization: `KakaoAK ${kakaoKey}` },
       }
     );
     return res.data.documents;
